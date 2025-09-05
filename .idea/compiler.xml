@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../../../General/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.36/5a30490a6e14977d97d9c73c924c1f1b5311ea95/lombok-1.18.36.jar" />
+          <entry name="$PROJECT_DIR$/../../../General/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.6.3/52e345c907fbf173b376586c7f8b131d53fa5867/mapstruct-processor-1.6.3.jar" />
+          <entry name="$PROJECT_DIR$/../../../General/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.20/6a5e7291ea3f2b590a7ce400adb7b3aea4d7e12c/jackson-annotations-2.20.jar" />
+        </processorPath>
+        <module name="JMFinanceCalculations.app.main" />
+        <module name="JMFinanceCalculations.core.main" />
+        <module name="JMFinanceCalculations.processing.main" />
+      </profile>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../../../General/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.36/5a30490a6e14977d97d9c73c924c1f1b5311ea95/lombok-1.18.36.jar" />
+        </processorPath>
+        <module name="JMFinanceCalculations.app.test" />
+        <module name="JMFinanceCalculations.core.test" />
+        <module name="JMFinanceCalculations.processing.test" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="21">
+      <module name="JMFinanceCalculations.buildSrc" target="23" />
+      <module name="JMFinanceCalculations.buildSrc.main" target="23" />
+      <module name="JMFinanceCalculations.buildSrc.test" target="23" />
+      <module name="JMFinanceCalculations.core.processing.main" target="23" />
+      <module name="JMFinanceCalculations.core.processing.test" target="23" />
+      <module name="JMFinanceCalculationsCore.lib" target="21" />
+      <module name="JMFinanceCalculationsCore.lib.main" target="21" />
+      <module name="JMFinanceCalculationsCore.lib.test" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
