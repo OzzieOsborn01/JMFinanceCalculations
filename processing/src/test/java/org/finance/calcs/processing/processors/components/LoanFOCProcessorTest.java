@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
-import org.finance.calcs.core.testingUtils.MakeJMFCCore;
-import org.finance.calcs.core.util.RoundingUtil;
+import org.finance.calcs.core.testingUtils.MakeJMFCCoreFOC;
 import org.finance.calcs.processing.model.context.LoanFOCProcessorContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +29,7 @@ public class LoanFOCProcessorTest {
 
     @Test
     public void process_SingleIteration() {
-        final LoanTerms loanTerms = MakeJMFCCore.aLoanTerms();
+        final LoanTerms loanTerms = MakeJMFCCoreFOC.aLoanTerms();
         loanTerms.setLoanTermStartDate(LocalDate.of(2025, 9, 1));
         final LoanFOC loan = new LoanFOC(loanTerms);
 
@@ -54,7 +53,7 @@ public class LoanFOCProcessorTest {
 
     @Test
     public void process_InsufficentPayment() {
-        final LoanTerms loanTerms = MakeJMFCCore.aLoanTerms();
+        final LoanTerms loanTerms = MakeJMFCCoreFOC.aLoanTerms();
         loanTerms.setLoanTermStartDate(LocalDate.of(2025, 9, 1));
 
         final LoanFOC loan = new LoanFOC(loanTerms);
@@ -73,7 +72,7 @@ public class LoanFOCProcessorTest {
 
     @Test
     public void process_FullIteration() throws IOException {
-        final LoanTerms loanTerms = MakeJMFCCore.aLoanTerms();
+        final LoanTerms loanTerms = MakeJMFCCoreFOC.aLoanTerms();
         loanTerms.setLoanTermStartDate(LocalDate.of(2025, 9, 1));
 
         final LoanFOC loan = new LoanFOC(loanTerms);

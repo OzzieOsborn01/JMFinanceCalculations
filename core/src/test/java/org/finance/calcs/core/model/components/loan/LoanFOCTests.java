@@ -117,4 +117,57 @@ public class LoanFOCTests {
         loan.applyFee(50000.0);
         Assertions.assertEquals(expectedLoanFOC, loan);
     }
+
+    @Test
+    public void loan_reduceMonthsLeft() {
+        final LoanTerms loanTerms = LoanTerms.builder()
+                .loanInitialAmount(800000.0)
+                .loanTermMonths(360)
+                .loanTermStartDate(LocalDate.of(2025, 9, 1))
+                .loanYearlyInterestRate(Percent.fromPercent(6.125, 5))
+                .build();
+        final LoanFOC loan = new LoanFOC(loanTerms);
+        loan.reduceMonthsLeft();
+        Assertions.assertEquals(359, loan.getLoanTermMonthsRemaining());
+    }
+
+    @Test
+    public void loan_setMonthsLeft() {
+        final LoanTerms loanTerms = LoanTerms.builder()
+                .loanInitialAmount(800000.0)
+                .loanTermMonths(360)
+                .loanTermStartDate(LocalDate.of(2025, 9, 1))
+                .loanYearlyInterestRate(Percent.fromPercent(6.125, 5))
+                .build();
+        final LoanFOC loan = new LoanFOC(loanTerms);
+        loan.setMonthsLeft(255);
+        Assertions.assertEquals(255, loan.getLoanTermMonthsRemaining());
+    }
+
+    @Test
+    public void loan_adjustYearlyRate() {
+        final LoanFOC expectedLoanFOC = LoanFOC.builder()
+                .loanInitialPrinciple(800000.0)
+                .loanCurrentPrinciple(550000.0)
+                .loanYearlyInterestRate(Percent.fromDecimal(0.07250, 5))
+                .loanTermMonths(360)
+                .loanTermMonthsRemaining(360)
+                .loanTermStartDate(LocalDate.of(2025, 9, 1))
+                .lastProcessedDate(LocalDate.of(2025, 9, 1))
+                .loanTermScheduledProjectedEndDate(LocalDate.of(2055, 9, 1))
+                .scheduledPaymentPerPeriod(3751.97)
+                .scheduledPaymentFrequency(EPaymentFrequency.MONTHLY)
+                .interestFrequency(EInterestFrequency.MONTHLY_12_BY_360)
+                .build();
+        final LoanTerms loanTerms = LoanTerms.builder()
+                .loanInitialAmount(800000.0)
+                .loanTermMonths(360)
+                .loanTermStartDate(LocalDate.of(2025, 9, 1))
+                .loanYearlyInterestRate(Percent.fromPercent(6.125, 5))
+                .build();
+        final LoanFOC loan = new LoanFOC(loanTerms);
+        loan.applyDecreasingBalance(250000.0);
+        loan.adjustYearlyRate(Percent.fromDecimal(0.07250, 5));
+        Assertions.assertEquals(expectedLoanFOC, loan);
+    }
 }

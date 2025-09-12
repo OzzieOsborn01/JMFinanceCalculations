@@ -1,12 +1,16 @@
 package org.finance.calcs.core.testingUtils;
 
+import org.finance.calcs.core.model.components.interest.InterestFOC;
 import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
+import org.finance.calcs.core.model.metadata.Debt;
+import org.finance.calcs.core.model.metadata.PersonalDetails;
 import org.finance.calcs.core.percent.Percent;
 
+import java.util.List;
 import java.util.Random;
 
-public final class MakeJMFCCore {
+public final class MakeJMFCCoreFOC {
     public static LoanFOC aLoanFOC(final double loanAmount, final Percent interest, final int loanMonths) {
         return new LoanFOC(
             LoanTerms.builder()
@@ -56,5 +60,22 @@ public final class MakeJMFCCore {
                 .loanYearlyInterestRate(Percent.fromPercent(6.125, 5))
                 .loanTermMonths(360)
                 .build();
+    }
+    public static PersonalDetails aPersonalDetails(final double grossIncome, final double netIncome, final List<Debt> debts) {
+        return PersonalDetails.builder()
+                .grossIncome(grossIncome)
+                .netIncome(netIncome)
+                .debts(debts)
+                .build();
+    }
+    public static PersonalDetails aPersonalDetails() {
+        return PersonalDetails.builder()
+                .grossIncome(200000.0)
+                .netIncome(150000.0)
+                .debts(List.of())
+                .build();
+    }
+    public static InterestFOC aInterestFOC() {
+        return new InterestFOC();
     }
 }

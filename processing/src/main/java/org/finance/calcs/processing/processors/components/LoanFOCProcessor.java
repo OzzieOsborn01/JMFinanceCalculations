@@ -3,12 +3,12 @@ package org.finance.calcs.processing.processors.components;
 import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.util.InterestFrequencyUtil;
 import org.finance.calcs.core.util.RoundingUtil;
-import org.finance.calcs.processing.common.processor.Processor;
+import org.finance.calcs.processing.common.processor.FOCProcessor;
 import org.finance.calcs.processing.model.context.LoanFOCProcessorContext;
 
 import java.time.LocalDate;
 
-public class LoanFOCProcessor implements Processor<LoanFOCProcessorContext, LoanFOC> {
+public class LoanFOCProcessor implements FOCProcessor<LoanFOCProcessorContext, LoanFOC> {
     @Override
     public void process(LoanFOCProcessorContext processorContext, LoanFOC loan, LocalDate processDate) {
         // Store local values
@@ -53,7 +53,6 @@ public class LoanFOCProcessor implements Processor<LoanFOCProcessorContext, Loan
     }
 
     public double getAccruedInterestForPeriod(LoanFOC loan, LocalDate processDate) {
-
        return InterestFrequencyUtil.calculateInterestAdditionForPeriod(
                 loan.getInterestFrequency(),
                 loan.getLoanYearlyInterestRate().asDouble(),

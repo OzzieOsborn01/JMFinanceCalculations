@@ -11,13 +11,10 @@ import java.time.temporal.TemporalUnit;
 
 @AllArgsConstructor
 public enum EPaymentFrequency {
-    BI_WEEKLY(new DateAdjustment(ChronoUnit.WEEKS, 2), 14),
-    MONTHLY(new DateAdjustment(ChronoUnit.MONTHS, 1), 28);
+    BI_WEEKLY(new DateAdjustment(ChronoUnit.WEEKS, 2)),
+    MONTHLY(new DateAdjustment(ChronoUnit.MONTHS, 1));
 
     final DateAdjustment defaultDateAdjustment;
-
-    @Getter
-    final Integer payableDaysInPeriod;
 
     public double paymentRateConverter(final double paymentRate) {
         return PaymentFrequencyUtil.paymentRateConverter(paymentRate, this);
@@ -47,15 +44,5 @@ public enum EPaymentFrequency {
         }
 
         return localDate.plus(amountToAdd, unit);
-    }
-
-    public LocalDate plusDefaultDateAdjustment(final LocalDate date) {
-        final DateAdjustment dateAdj = defaultDateAdjustment;
-        return date.plus(dateAdj.getAdjustmentAmount(), dateAdj.getTemporalUnitAdjustment());
-    }
-
-    public LocalDate minusDefaultDateAdjustment(final LocalDate date) {
-        final DateAdjustment dateAdj = defaultDateAdjustment;
-        return date.minus(dateAdj.getAdjustmentAmount(), dateAdj.getTemporalUnitAdjustment());
     }
 }

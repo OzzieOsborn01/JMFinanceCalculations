@@ -3,6 +3,8 @@ package org.finance.calcs.core.enums;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 public class EPaymentFrequencyTest {
 
     @Test
@@ -21,5 +23,12 @@ public class EPaymentFrequencyTest {
     public void interestFrequency() {
         Assertions.assertEquals(EInterestFrequency.MONTHLY_12_BY_360, EPaymentFrequency.MONTHLY.interestFrequency());
         Assertions.assertEquals(EInterestFrequency.WEEKLY_52_BY_364, EPaymentFrequency.BI_WEEKLY.interestFrequency());
+    }
+
+    @Test
+    public void getNextDate() {
+        final LocalDate date = LocalDate.of(2025, 9, 1);
+        Assertions.assertEquals(LocalDate.of(2025, 10, 1), EPaymentFrequency.MONTHLY.getNextDate(date));
+        Assertions.assertEquals(LocalDate.of(2025, 9, 15), EPaymentFrequency.BI_WEEKLY.getNextDate(date));
     }
 }

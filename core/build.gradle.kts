@@ -25,6 +25,8 @@ dependencies {
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+    testFixturesCompileOnly(libs.lombok)
+    testFixturesAnnotationProcessor(libs.lombok)
     testCompileOnly(libs.lombok)
     testAnnotationProcessor(libs.lombok)
 

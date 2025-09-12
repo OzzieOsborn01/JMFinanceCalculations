@@ -27,6 +27,8 @@ dependencies {
 
     implementation(libs.mapstruct)
     annotationProcessor(libs.mapstruct.processor)
+    testImplementation(libs.mapstruct)
+    testAnnotationProcessor(libs.mapstruct.processor)
 
     implementation(libs.commons.lang3)
 

@@ -47,8 +47,6 @@ public class LoanFOC implements FinancialObligationComponent {
     public LoanFOC(final LoanTerms loanTerms) {
         loanInitialPrinciple = loanTerms.getLoanInitialAmount();
         loanCurrentPrinciple = loanTerms.getLoanInitialAmount();
-
-        loanYearlyInterestRate = loanTerms.getLoanYearlyInterestRate();
         interestFrequency = loanTerms.getInterestFrequency();
 
         loanTermMonths = loanTerms.getLoanTermMonths();
@@ -58,15 +56,7 @@ public class LoanFOC implements FinancialObligationComponent {
         loanTermScheduledProjectedEndDate =
             loanTerms.getLoanTermStartDate().plus(loanTerms.getLoanTermMonths(), ChronoUnit.MONTHS);
 
-        final Integer scheduledPaymentsPerYear =
-                PaymentFrequencyUtil.regularPaymentsPerYear(loanTerms.getScheduledPaymentFrequency());
-        scheduledPaymentFrequency = loanTerms.getScheduledPaymentFrequency();
-        scheduledPaymentPerPeriod = PaymentCalculationUtil.PMT(
-                loanYearlyInterestRate,
-                loanTermMonths,
-                loanInitialPrinciple,
-                scheduledPaymentsPerYear
-            );
+        adjustScheduledPayment(loanTerms.getScheduledPaymentFrequency(), loanTerms.getLoanYearlyInterestRate());
     }
 
     @Override
@@ -83,7 +73,7 @@ public class LoanFOC implements FinancialObligationComponent {
 
     @Override
     public void adjustYearlyRate(final Percent percent) {
-        loanYearlyInterestRate = percent;
+        adjustScheduledPayment(scheduledPaymentFrequency, percent);
     }
 
     public int reduceMonthsLeft() {
@@ -93,5 +83,18 @@ public class LoanFOC implements FinancialObligationComponent {
 
     public void setMonthsLeft(final int monthsLeft) {
         loanTermMonthsRemaining = monthsLeft;
+    }
+
+    public void adjustScheduledPayment(final EPaymentFrequency scheduledPaymentFrequency, final Percent loanYearlyInterestRate) {
+        final Integer scheduledPaymentsPerYear =
+                PaymentFrequencyUtil.regularPaymentsPerYear(scheduledPaymentFrequency);
+        this.scheduledPaymentFrequency = scheduledPaymentFrequency;
+        this.loanYearlyInterestRate = loanYearlyInterestRate;
+        this.scheduledPaymentPerPeriod = PaymentCalculationUtil.PMT(
+                loanYearlyInterestRate,
+                loanTermMonthsRemaining,
+                loanCurrentPrinciple,
+                scheduledPaymentsPerYear
+        );
     }
 }

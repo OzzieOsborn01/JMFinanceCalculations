@@ -5,6 +5,6 @@ import org.finance.calcs.processing.common.model.FOCProcessorContext;
 
 import java.time.LocalDate;
 
-public interface Processor <Context extends FOCProcessorContext, FOCComp extends FinancialObligationComponent> {
+public interface FOCProcessor<Context extends FOCProcessorContext, FOCComp extends FinancialObligationComponent> {
     void process(Context processorContext, FOCComp focComponent, LocalDate processDate);
 }
