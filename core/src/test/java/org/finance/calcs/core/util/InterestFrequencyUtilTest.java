@@ -1,7 +1,9 @@
 package org.finance.calcs.core.util;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.finance.calcs.core.enums.EInterestFrequency;
+import org.finance.calcs.core.enums.EPaymentFrequency;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +27,17 @@ public class InterestFrequencyUtilTest {
                 );
 
         Assertions.assertEquals(expectedInterestRates, dailyInterestRate);
+    }
+
+    @Test
+    public void calculateDailyBasedInterestRate_NotImplemented() {
+        Assertions.assertThrows(NotImplementedException.class, () ->
+                InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
+                    EInterestFrequency.NOT_IMPLEMENTED,
+                    0.06125,
+                    LocalDate.of(2025, 1, 1),
+                    LocalDate.of(2025, 2, 1)
+        ));
     }
 
     @Test

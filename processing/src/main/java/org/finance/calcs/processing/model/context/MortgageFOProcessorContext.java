@@ -30,6 +30,9 @@ public class MortgageFOProcessorContext {
     @Builder.Default
     Double totalInterestContribution = 0.0;
 
+    @Builder.Default
+    Double totalInsuranceContribution = 0.0;
+
     @Setter(AccessLevel.NONE)
     @ToString.Exclude
     LocalDate lastProcessedDate;
@@ -63,11 +66,18 @@ public class MortgageFOProcessorContext {
                 .build();
     }
 
+    public InsuranceFOCProcessorContext getHomeInsuranceFOCProcessorContext(final double insuranceContributionPayment) {
+        return InsuranceFOCProcessorContext.builder()
+                .payment(insuranceContributionPayment)
+                .build();
+    }
+
     public void incrementMortgageContext(final MortgageFOPeriod mortgageFOPeriod) {
         mortgagePeriodList.add(mortgageFOPeriod);
         totalPayments = RoundingUtil.roundValue(totalPayments + mortgageFOPeriod.getPayment());
         totalInterestContribution = RoundingUtil.roundValue(totalInterestContribution + mortgageFOPeriod.getInterestContribution());
         totalLoanContribution = RoundingUtil.roundValue(totalLoanContribution + mortgageFOPeriod.getLoanContribution());
+        totalInsuranceContribution = RoundingUtil.roundValue(totalInsuranceContribution + mortgageFOPeriod.getInsuranceContribution());
         lastProcessedDate = mortgageFOPeriod.getEndDate();
     }
 }

@@ -1,0 +1,215 @@
+package org.finance.calcs.core.model.components.insurance;
+
+import org.finance.calcs.core.enums.EInsuranceCalcType;
+import org.finance.calcs.core.enums.EPaymentFrequency;
+import org.finance.calcs.core.percent.Percent;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+
+public class InsuranceFlatPaymentFOCTests {
+    @Test
+    public void createFlatPaymentInsurance() {
+        final InsuranceFlatPaymentFOC expectedInsuranceFOC = InsuranceFlatPaymentFOC.builder()
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .scheduledPaymentAmount(333.33)
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .flatRateDurationInsuranceRate(4000.0)
+                .startDate(LocalDate.of(2025, 9, 1))
+                .periodStartDate(LocalDate.of(2025, 9, 1))
+                .periodEndDate(LocalDate.of(2026, 3, 1))
+                .periodBalance(4000.0)
+                .build();
+
+        final InsuranceTerms insuranceTerms = InsuranceTerms.builder()
+                .startDate(LocalDate.of(2025, 9, 1))
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .flatRateAnnualInsuranceRate(4000.0)
+                .build();
+
+        final InsuranceFlatPaymentFOC insurance = new InsuranceFlatPaymentFOC(insuranceTerms);
+        Assertions.assertEquals(expectedInsuranceFOC, insurance);
+    }
+
+    @Test
+    public void createFlatPaymentInsurance_DefaultValues() {
+        final LocalDate today = LocalDate.now();
+        final InsuranceFlatPaymentFOC expectedInsuranceFOC = InsuranceFlatPaymentFOC.builder()
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .insurancePeriodDuration(EPaymentFrequency.YEARLY)
+                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .scheduledPaymentAmount(333.33)
+                .flatRateDurationInsuranceRate(4000.0)
+                .startDate(today)
+                .periodStartDate(today)
+                .periodEndDate(today.plusYears(1))
+                .periodBalance(4000.0)
+                .build();
+
+        final InsuranceTerms insuranceTerms = InsuranceTerms.builder()
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .flatRateAnnualInsuranceRate(4000.0)
+                .build();
+
+        final InsuranceFlatPaymentFOC insurance = new InsuranceFlatPaymentFOC(insuranceTerms);
+        Assertions.assertEquals(expectedInsuranceFOC, insurance);
+    }
+
+    @Test
+    public void interest_ApplyPayment() {
+        final InsuranceFlatPaymentFOC expectedInsuranceFOC = InsuranceFlatPaymentFOC.builder()
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .scheduledPaymentAmount(333.33)
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .flatRateDurationInsuranceRate(4000.0)
+                .startDate(LocalDate.of(2025, 9, 1))
+                .periodStartDate(LocalDate.of(2025, 9, 1))
+                .periodEndDate(LocalDate.of(2026, 3, 1))
+                .periodBalance(3600.0)
+                .build();
+
+        final InsuranceTerms insuranceTerms = InsuranceTerms.builder()
+                .startDate(LocalDate.of(2025, 9, 1))
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .flatRateAnnualInsuranceRate(4000.0)
+                .build();
+
+        final InsuranceFlatPaymentFOC insurance = new InsuranceFlatPaymentFOC(insuranceTerms);
+        insurance.applyPayment(400.0);
+        Assertions.assertEquals(expectedInsuranceFOC, insurance);
+    }
+
+    @Test
+    public void interest_ApplyFee() {
+        final InsuranceFlatPaymentFOC expectedInsuranceFOC = InsuranceFlatPaymentFOC.builder()
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .scheduledPaymentAmount(333.33)
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .flatRateDurationInsuranceRate(4000.0)
+                .startDate(LocalDate.of(2025, 9, 1))
+                .periodStartDate(LocalDate.of(2025, 9, 1))
+                .periodEndDate(LocalDate.of(2026, 3, 1))
+                .periodBalance(4400.0)
+                .build();
+
+        final InsuranceTerms insuranceTerms = InsuranceTerms.builder()
+                .startDate(LocalDate.of(2025, 9, 1))
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .flatRateAnnualInsuranceRate(4000.0)
+                .build();
+
+        final InsuranceFlatPaymentFOC insurance = new InsuranceFlatPaymentFOC(insuranceTerms);
+        insurance.applyFee(400.0);
+        Assertions.assertEquals(expectedInsuranceFOC, insurance);
+    }
+
+    @Test
+    public void interest_getters() {
+        final InsuranceTerms insuranceTerms = InsuranceTerms.builder()
+                .startDate(LocalDate.of(2025, 9, 1))
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .flatRateAnnualInsuranceRate(4000.0)
+                .build();
+
+        final InsuranceFlatPaymentFOC insurance = new InsuranceFlatPaymentFOC(insuranceTerms);
+        Assertions.assertEquals(8000.0, insurance.getAnnualInsuranceRate());
+        Assertions.assertEquals(Percent.ZERO_PERCENT, insurance.getAnnualInsuranceRatePercent());
+        Assertions.assertEquals(4000.0, insurance.getInsurancePeriodBalance());
+        Assertions.assertEquals(333.33, insurance.getScheduledPaymentAmount());
+        Assertions.assertEquals(
+                LocalDate.of(2025, 9, 1).plusMonths(6),
+                insurance.getNextPeriodStartDate());
+    }
+
+    @Test
+    public void interest_adjustScheduledPayment() {
+        final InsuranceFlatPaymentFOC expectedInsuranceFOC = InsuranceFlatPaymentFOC.builder()
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .scheduledPaymentAmount(333.33)
+                .insurancePeriodDuration(EPaymentFrequency.YEARLY)
+                .flatRateDurationInsuranceRate(4000.0)
+                .startDate(LocalDate.of(2025, 9, 1))
+                .periodStartDate(LocalDate.of(2025, 9, 1))
+                .periodEndDate(LocalDate.of(2026, 9, 1))
+                .periodBalance(4000.0)
+                .build();
+
+        final InsuranceTerms insuranceTerms = InsuranceTerms.builder()
+                .startDate(LocalDate.of(2025, 9, 1))
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .flatRateAnnualInsuranceRate(4000.0)
+                .build();
+
+        final InsuranceFlatPaymentFOC insurance = new InsuranceFlatPaymentFOC(insuranceTerms);
+        insurance.adjustScheduledPayment(EPaymentFrequency.MONTHLY, EPaymentFrequency.YEARLY, 4000.0);
+        Assertions.assertEquals(expectedInsuranceFOC, insurance);
+    }
+
+    @Test
+    public void interest_resetPeriod() {
+        final InsuranceFlatPaymentFOC expectedInsuranceFOC = InsuranceFlatPaymentFOC.builder()
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .scheduledPaymentAmount(333.33)
+                .insurancePeriodDuration(EPaymentFrequency.YEARLY)
+                .flatRateDurationInsuranceRate(4000.0)
+                .startDate(LocalDate.of(2025, 9, 1))
+                .periodStartDate(LocalDate.of(2025, 9, 1))
+                .periodEndDate(LocalDate.of(2026, 9, 1))
+                .periodBalance(4000.0)
+                .build();
+
+        final InsuranceTerms insuranceTerms = InsuranceTerms.builder()
+                .startDate(LocalDate.of(2025, 9, 1))
+                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .insuranceType("home")
+                .insuranceProvider("garbage company")
+                .insurancePeriodDuration(EPaymentFrequency.SEMI_ANNUALLY)
+                .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
+                .flatRateAnnualInsuranceRate(4000.0)
+                .build();
+
+        final InsuranceFlatPaymentFOC insurance = new InsuranceFlatPaymentFOC(insuranceTerms);
+        insurance.adjustScheduledPayment(EPaymentFrequency.MONTHLY, EPaymentFrequency.YEARLY, 4000.0);
+        Assertions.assertEquals(expectedInsuranceFOC, insurance);
+    }
+}

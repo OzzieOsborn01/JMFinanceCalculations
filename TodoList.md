@@ -7,6 +7,7 @@ The following list is an incomplete list of things to add or change
   * Implement Taxes
   * Implement Home Insurance
   * Implement HOA Payment (Subscription)
+  * Change Insurance to be flexible for term duration (not just annual ... every 6 months, monthly, weekly, etc)
 * Processing
   * Add the following processors to mortgage processor
     * Mortgage Premiums
@@ -14,6 +15,7 @@ The following list is an incomplete list of things to add or change
       * Mortgage Insurance Premiums
     * Taxes
     * Home Insurance
+      * Instead of applying payment directly, move money in and out of escrow
     * HOA Payment Subscription
   * Update Mortgage Components with increases
   * Add Payment processing component to Mortgage Processor

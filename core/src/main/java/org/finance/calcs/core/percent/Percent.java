@@ -9,6 +9,10 @@ import org.finance.calcs.core.util.RoundingUtil;
 @JsonSerialize(using = PercentSerializer.class)
 public class Percent {
 
+    public static final Percent ZERO_PERCENT = new Percent(0.0);
+
+    public static final Percent ONE_PERCENT = new Percent(1.0);
+
     private final Double percentValue;
 
     public Percent(final Double value, final Integer digits) {

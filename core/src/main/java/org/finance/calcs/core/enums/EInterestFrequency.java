@@ -9,7 +9,8 @@ import java.util.List;
 public enum EInterestFrequency {
     MONTHLY_12_BY_360,
     WEEKLY_52_BY_364,
-    DAILY;
+    DAILY,
+    NOT_IMPLEMENTED;
 
     public List<Pair<Integer, Double>> getDailyInterestRates(
             final double annualInterestRate,

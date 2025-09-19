@@ -16,5 +16,5 @@ public interface FinancialObligationComponent {
 
     double applyIncreasingBalance(double amount);
 
-    void adjustYearlyRate(Percent percent);
+    void adjustYearlyRate(Double base, Percent percent);
 }

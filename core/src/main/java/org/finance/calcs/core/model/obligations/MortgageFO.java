@@ -2,6 +2,9 @@ package org.finance.calcs.core.model.obligations;
 
 import lombok.*;
 import org.finance.calcs.core.enums.EPaymentFrequency;
+import org.finance.calcs.core.factories.InsuranceFOCFactory;
+import org.finance.calcs.core.model.components.insurance.InsuranceFOC;
+import org.finance.calcs.core.model.components.insurance.InsuranceTerms;
 import org.finance.calcs.core.model.components.interest.InterestFOC;
 import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
@@ -23,6 +26,8 @@ public class MortgageFO implements FinancialObligation {
 
     private final InterestFOC interestComponent;
 
+    private final InsuranceFOC homeInsuranceComponent;
+
     private final LocalDate startDate;
 
     LocalDate lastProcessedDate;
@@ -33,11 +38,13 @@ public class MortgageFO implements FinancialObligation {
             @NonNull EPaymentFrequency frequency,
             @NonNull PersonalDetails personalDetails,
             @NonNull LoanTerms loanTerms,
+            @NonNull InsuranceTerms homeInsuranceTerms,
             @NonNull LocalDate startDate
     ) {
         this.scheduledPaymentFrequency = frequency;
         this.personalDetails = personalDetails;
         this.loanComponent = new LoanFOC(loanTerms);
+        this.homeInsuranceComponent = InsuranceFOCFactory.buildInsuranceFOC(homeInsuranceTerms);
         this.interestComponent = new InterestFOC();
         this.startDate = startDate;
         this.lastProcessedDate = startDate;

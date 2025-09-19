@@ -72,7 +72,7 @@ public class LoanFOC implements FinancialObligationComponent {
     }
 
     @Override
-    public void adjustYearlyRate(final Percent percent) {
+    public void adjustYearlyRate(Double base, final Percent percent) {
         adjustScheduledPayment(scheduledPaymentFrequency, percent);
     }
 

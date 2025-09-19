@@ -167,7 +167,7 @@ public class LoanFOCTests {
                 .build();
         final LoanFOC loan = new LoanFOC(loanTerms);
         loan.applyDecreasingBalance(250000.0);
-        loan.adjustYearlyRate(Percent.fromDecimal(0.07250, 5));
+        loan.adjustYearlyRate(0.0, Percent.fromDecimal(0.07250, 5));
         Assertions.assertEquals(expectedLoanFOC, loan);
     }
 }

@@ -19,7 +19,7 @@ public class InterestFOC implements FinancialObligationComponent {
     }
 
     @Override
-    public void adjustYearlyRate(Percent percent) {
+    public void adjustYearlyRate(Double base, Percent percent) {
         // No Op
         return;
     }
