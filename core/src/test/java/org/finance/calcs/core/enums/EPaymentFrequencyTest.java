@@ -1,5 +1,6 @@
 package org.finance.calcs.core.enums;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,5 +31,11 @@ public class EPaymentFrequencyTest {
         final LocalDate date = LocalDate.of(2025, 9, 1);
         Assertions.assertEquals(LocalDate.of(2025, 10, 1), EPaymentFrequency.MONTHLY.getNextDate(date));
         Assertions.assertEquals(LocalDate.of(2025, 9, 15), EPaymentFrequency.BI_WEEKLY.getNextDate(date));
+    }
+
+    @Test
+    public void getNextDate_notImplemented() {
+        final LocalDate date = LocalDate.of(2025, 9, 1);
+        Assertions.assertThrows(NotImplementedException.class, () -> EPaymentFrequency.NOT_IMPLEMENTED.getNextDate(date));
     }
 }

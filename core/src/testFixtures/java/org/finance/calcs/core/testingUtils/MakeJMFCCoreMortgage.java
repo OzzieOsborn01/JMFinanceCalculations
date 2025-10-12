@@ -5,6 +5,7 @@ import lombok.NonNull;
 import org.finance.calcs.core.enums.EPaymentFrequency;
 import org.finance.calcs.core.model.components.insurance.InsuranceTerms;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
+import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceTerms;
 import org.finance.calcs.core.model.metadata.PersonalDetails;
 import org.finance.calcs.core.model.obligations.MortgageFO;
 
@@ -20,7 +21,9 @@ public class MakeJMFCCoreMortgage {
             PersonalDetails personalDetails,
             LoanTerms loanTerms,
             InsuranceTerms insuranceTerms,
-            @NonNull LocalDate startDate
+            MortgageInsuranceTerms mortgageInsuranceTerms,
+            @NonNull LocalDate startDate,
+            double houseValue
     ) {
         final BiFunction<Object, Object, Object> valueOrDefault = (input, defaultValue) ->
                 !Objects.isNull(input) ? input : defaultValue;
@@ -28,14 +31,19 @@ public class MakeJMFCCoreMortgage {
         final LoanTerms finalLoanTerms = (LoanTerms) valueOrDefault.apply(loanTerms, MakeJMFCCoreFOC.aLoanTerms());
         finalLoanTerms.setLoanTermStartDate(startDate);
 
-        final InsuranceTerms finalInsuranceTerms = (InsuranceTerms) valueOrDefault.apply(loanTerms, MakeJMFCCoreFOC.aFlatPaymentInsuranceTerms());
+        final InsuranceTerms finalInsuranceTerms = (InsuranceTerms) valueOrDefault.apply(insuranceTerms, MakeJMFCCoreFOC.aFlatPaymentInsuranceTerms());
         finalInsuranceTerms.setStartDate(startDate);
+
+        final MortgageInsuranceTerms finalMortgageInsuranceTerms = (MortgageInsuranceTerms) valueOrDefault.apply(mortgageInsuranceTerms, MakeJMFCCoreFOC.aPrivateMortgageInsuranceTerms());
+        finalMortgageInsuranceTerms.setStartDate(startDate);
 
         return new MortgageFO(
                 (EPaymentFrequency) valueOrDefault.apply(frequency, EPaymentFrequency.MONTHLY),
                 (PersonalDetails) valueOrDefault.apply(personalDetails, MakeJMFCCoreFOC.aPersonalDetails()),
                 finalLoanTerms,
                 finalInsuranceTerms,
-                startDate);
+                finalMortgageInsuranceTerms,
+                startDate,
+                houseValue);
     }
 }

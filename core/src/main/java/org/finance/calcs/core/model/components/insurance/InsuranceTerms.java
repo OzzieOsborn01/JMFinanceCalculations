@@ -3,8 +3,8 @@ package org.finance.calcs.core.model.components.insurance;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
-import org.finance.calcs.core.enums.EInsuranceCalcType;
 import org.finance.calcs.core.enums.EPaymentFrequency;
+import org.finance.calcs.core.model.calculations.PaymentCalculation;
 import org.finance.calcs.core.percent.Percent;
 
 import java.time.LocalDate;
@@ -13,13 +13,13 @@ import java.time.LocalDate;
 @Builder(toBuilder = true)
 public class InsuranceTerms {
     @NonNull
-    EInsuranceCalcType insuranceCalcType;
+    private PaymentCalculation paymentCalculation;
 
     @NonNull
-    String insuranceType;
+    private String insuranceType;
 
     @NonNull
-    String insuranceProvider;
+    private String insuranceProvider;
 
     @NonNull
     @Builder.Default
@@ -27,14 +27,14 @@ public class InsuranceTerms {
 
     @NonNull
     @Builder.Default
-    EPaymentFrequency paymentFrequency = EPaymentFrequency.MONTHLY;
+    private EPaymentFrequency paymentFrequency = EPaymentFrequency.MONTHLY;
 
-    Double flatRateAnnualInsuranceRate;
+    private  Double flatRateAnnualInsuranceRate;
 
-    Percent percentInsuranceRate;
+    private Percent percentInsuranceRate;
 
-    Double percentInterestRateBase;
+    private  Double percentInterestRateBase;
 
     @Builder.Default
-    LocalDate startDate = LocalDate.now();
+    private LocalDate startDate = LocalDate.now();
 }

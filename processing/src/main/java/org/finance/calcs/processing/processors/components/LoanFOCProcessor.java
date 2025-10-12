@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 public class LoanFOCProcessor implements FOCProcessor<LoanFOCProcessorContext, LoanFOC> {
     @Override
-    public void process(LoanFOCProcessorContext processorContext, LoanFOC loan, LocalDate processDate) {
+    public void processPayment(LoanFOCProcessorContext processorContext, LoanFOC loan, LocalDate processDate) {
         // Store local values
         final Double payment = processorContext.getPayment();
         final Double loanBalance = loan.getLoanCurrentPrinciple();
@@ -33,15 +33,15 @@ public class LoanFOCProcessor implements FOCProcessor<LoanFOCProcessorContext, L
         final double paymentAfterInterest = RoundingUtil.roundValue(payment - periodInterestAccumulation);
 
         Double adjustedLoanBalance = 0.0;
-        if (paymentAfterInterest <= loanBalance && paymentAfterInterest > 0.0 && loanBalance > 0.0) {
+        if (paymentAfterInterest <= loanBalance && paymentAfterInterest > 0.0 && loanBalance > 0.0 && loan.getLoanTermMonthsRemaining() > 1) {
             adjustedLoanBalance = loan.applyPayment(paymentAfterInterest);
         } else if (paymentAfterInterest > 0.0 && loanBalance > 0.0 || loan.getLoanTermMonthsRemaining() <= 1) {
             adjustedLoanBalance = loan.applyPayment(loanBalance);
         } else {
             throw new RuntimeException("Loan Balance or Payment is below zero");
         }
+
         loan.setLastProcessedDate(processDate);
-        loan.reduceMonthsLeft();
 
         double paymentRemaining = Math.max(0.0, paymentAfterInterest - loanBalance);
         processorContext.setPrincipalBalance(adjustedLoanBalance);
@@ -52,8 +52,14 @@ public class LoanFOCProcessor implements FOCProcessor<LoanFOCProcessorContext, L
         processorContext.setPaymentUsed(payment - paymentRemaining);
     }
 
+    @Override
+    public void processEndOfPeriod(LoanFOCProcessorContext processorContext, LoanFOC loan, LocalDate processDate) {
+        loan.setLastProcessedDate(processDate);
+        loan.reduceMonthsLeft();
+    }
+
     public double getAccruedInterestForPeriod(LoanFOC loan, LocalDate processDate) {
-       return InterestFrequencyUtil.calculateInterestAdditionForPeriod(
+        return InterestFrequencyUtil.calculateInterestAdditionForPeriod(
                 loan.getInterestFrequency(),
                 loan.getLoanYearlyInterestRate().asDouble(),
                 loan.getLoanCurrentPrinciple(),

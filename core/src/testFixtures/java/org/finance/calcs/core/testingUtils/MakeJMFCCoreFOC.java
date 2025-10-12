@@ -1,15 +1,19 @@
 package org.finance.calcs.core.testingUtils;
 
-import org.finance.calcs.core.enums.EInsuranceCalcType;
-import org.finance.calcs.core.enums.EPaymentFrequency;
+import org.finance.calcs.core.enums.*;
 import org.finance.calcs.core.factories.InsuranceFOCFactory;
+import org.finance.calcs.core.factories.MortgageInsuranceFOCFactory;
 import org.finance.calcs.core.model.components.insurance.InsuranceFOC;
 import org.finance.calcs.core.model.components.insurance.InsuranceTerms;
 import org.finance.calcs.core.model.components.interest.InterestFOC;
 import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
+import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceFOC;
+import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceTerms;
 import org.finance.calcs.core.model.metadata.Debt;
+import org.finance.calcs.core.model.metadata.ObligationTerminationStrategy;
 import org.finance.calcs.core.model.metadata.PersonalDetails;
+import org.finance.calcs.core.model.calculations.PaymentCalculation;
 import org.finance.calcs.core.percent.Percent;
 
 import java.util.List;
@@ -113,7 +117,7 @@ public final class MakeJMFCCoreFOC {
             final Double paymentRate
     ) {
         return InsuranceTerms.builder()
-                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .paymentCalculation(new PaymentCalculation(4000.0))
                 .insuranceType(insuranceType)
                 .insuranceProvider(insuranceProvider)
                 .insurancePeriodDuration(periodFrequency)
@@ -123,7 +127,7 @@ public final class MakeJMFCCoreFOC {
     }
     public static InsuranceTerms aRandomFlatPaymentInsuranceTerms() {
         return InsuranceTerms.builder()
-                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .paymentCalculation(new PaymentCalculation(4000.0))
                 .insuranceType("home")
                 .insuranceProvider("garbage company")
                 .insurancePeriodDuration(EPaymentFrequency.YEARLY)
@@ -133,12 +137,63 @@ public final class MakeJMFCCoreFOC {
     }
     public static InsuranceTerms aFlatPaymentInsuranceTerms() {
         return InsuranceTerms.builder()
-                .insuranceCalcType(EInsuranceCalcType.FLAT_PAYMENT)
+                .paymentCalculation(new PaymentCalculation(4000.0))
                 .insuranceType("home")
                 .insuranceProvider("garbage company")
                 .insurancePeriodDuration(EPaymentFrequency.YEARLY)
                 .paymentFrequency(EPaymentFrequency.MONTHLY)
                 .flatRateAnnualInsuranceRate(4000.0)
+                .build();
+    }
+
+    public static MortgageInsuranceFOC aPrivateMortgageInsuranceFOC(
+            final Double houseValue,
+            final Double loanValue,
+            final PaymentCalculation paymentCalculation,
+            final ObligationTerminationStrategy<Percent> softBalanceTermCondition,
+            final ObligationTerminationStrategy<Percent> hardBalanceTermCondition
+    ) {
+        return MortgageInsuranceFOCFactory.createMortgageInsuranceFOC(aPrivateMortgageInsuranceTerms(houseValue, loanValue, paymentCalculation, softBalanceTermCondition, hardBalanceTermCondition));
+    }
+
+    public static MortgageInsuranceFOC aPrivateMortgageInsuranceFOC() {
+        return MortgageInsuranceFOCFactory.createMortgageInsuranceFOC(aPrivateMortgageInsuranceTerms());
+    }
+
+    public static MortgageInsuranceTerms aPrivateMortgageInsuranceTerms(
+            final Double houseValue,
+            final Double loanValue,
+            final PaymentCalculation paymentCalculation,
+            final ObligationTerminationStrategy<Percent> softBalanceTermCondition,
+            final ObligationTerminationStrategy<Percent> hardBalanceTermCondition
+    ) {
+        return MortgageInsuranceTerms.builder()
+                .mortgageInsuranceType(EMortgageInsuranceType.PRIVATE_MORTGAGE_INSURANCE)
+                .houseValue(houseValue)
+                .loanValue(loanValue)
+                .paymentCalculation(paymentCalculation)
+                .softBalanceTermCondition(softBalanceTermCondition)
+                .hardBalanceTermCondition(hardBalanceTermCondition)
+                .build();
+    }
+    public static MortgageInsuranceTerms aPrivateMortgageInsuranceTerms() {
+        return MortgageInsuranceTerms.builder()
+                .mortgageInsuranceType(EMortgageInsuranceType.PRIVATE_MORTGAGE_INSURANCE)
+                .houseValue(875000.0)
+                .loanValue(775000.0)
+                .paymentCalculation(new PaymentCalculation(100.0))
+                .softBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
+                        .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
+                        .terminationConditionFactor(ETerminationConditionFactor.OBLIGATION_COMPLETED)
+                        .terminationConditionValue(Percent.fromPercent(20.0, 4).decreaseReversePercentage())
+                        .terminationConditionDescription("Soft Balance Condition")
+                        .build())
+                .hardBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
+                        .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
+                        .terminationConditionFactor(ETerminationConditionFactor.OBLIGATION_COMPLETED)
+                        .terminationConditionValue(Percent.fromPercent(22.0, 4).decreaseReversePercentage())
+                        .terminationConditionDescription("Hard Balance Condition")
+                        .build())
                 .build();
     }
 }

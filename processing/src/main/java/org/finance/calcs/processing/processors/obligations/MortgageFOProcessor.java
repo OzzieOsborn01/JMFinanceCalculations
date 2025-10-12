@@ -1,20 +1,24 @@
 package org.finance.calcs.processing.processors.obligations;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.finance.calcs.core.model.components.insurance.InsuranceFOC;
-import org.finance.calcs.core.model.components.interest.InterestFOC;
 import org.finance.calcs.core.model.components.loan.LoanFOC;
+import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceFOC;
 import org.finance.calcs.core.model.obligations.MortgageFO;
 import org.finance.calcs.core.util.RoundingUtil;
 import org.finance.calcs.processing.common.processor.FOProcessor;
 import org.finance.calcs.processing.model.context.InsuranceFOCProcessorContext;
 import org.finance.calcs.processing.model.context.LoanFOCProcessorContext;
 import org.finance.calcs.processing.model.context.MortgageFOProcessorContext;
+import org.finance.calcs.processing.model.context.MortgageInsuranceFOCProcessorContext;
 import org.finance.calcs.processing.model.obligationPeriod.MortgageFOPeriod;
 import org.finance.calcs.processing.processors.components.InsuranceFOCProcessor;
 import org.finance.calcs.processing.processors.components.LoanFOCProcessor;
+import org.finance.calcs.processing.processors.components.MortgageInsuranceFOCProcessor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 public class MortgageFOProcessor implements FOProcessor<MortgageFOProcessorContext, MortgageFO> {
@@ -22,6 +26,8 @@ public class MortgageFOProcessor implements FOProcessor<MortgageFOProcessorConte
     final LoanFOCProcessor loanFOCProcessor;
 
     final InsuranceFOCProcessor insuranceFOCProcessor;
+
+    final MortgageInsuranceFOCProcessor mortgageInsuranceFOCProcessor;
 
     @Override
     public void processToCompletion(final MortgageFOProcessorContext processorContext, final MortgageFO mortgageFO) {
@@ -44,11 +50,23 @@ public class MortgageFOProcessor implements FOProcessor<MortgageFOProcessorConte
         // TODO: Collect all payment for each day
 
         processorContext.setCurrentPayment(requiredPayment);
-        final InsuranceFOCProcessorContext homeInsuranceContext = processorContext.getHomeInsuranceFOCProcessorContext(requiredPayment);
-        insuranceFOCProcessor.process(homeInsuranceContext, mortgageFO.getHomeInsuranceComponent(), nextProcessDate);
+        final PaymentAndRemainingBalance homeInsurancePRB = calculateHomeInsuranceBalancePayment(requiredPayment, mortgageFO.getHomeInsuranceComponent());
+        final InsuranceFOCProcessorContext homeInsuranceContext = processorContext.getHomeInsuranceFOCProcessorContext(homeInsurancePRB.obligationPayment);
+        insuranceFOCProcessor.processPayment(homeInsuranceContext, mortgageFO.getHomeInsuranceComponent(), nextProcessDate);
 
-        final LoanFOCProcessorContext loanProcessorContext = processorContext.getLoanFOProcessorContext(homeInsuranceContext.getPaymentRemaining());
-        loanFOCProcessor.process(loanProcessorContext, mortgageFO.getLoanComponent(), nextProcessDate);
+        final PaymentAndRemainingBalance mortgageInsurancePRB = calculateMortgageInsuranceBalancePayment(homeInsurancePRB.remainingPayment, mortgageFO.getMortgageInsuranceComponent());
+        final MortgageInsuranceFOCProcessorContext mortgageInsuranceFOCProcessorContext =
+                processorContext.getMortgageInsuranceFOProcessorContext(
+                        mortgageInsurancePRB.obligationPayment,
+                        mortgageFO.getHouseValue(),
+                        mortgageFO.getLoanBalance()
+                );
+        mortgageInsuranceFOCProcessor.processPayment(mortgageInsuranceFOCProcessorContext, mortgageFO.getMortgageInsuranceComponent(), nextProcessDate);
+
+        final boolean isLastPeriod = isLastPeriod(mortgageFO);
+        final PaymentAndRemainingBalance loanPRB = calculateLoanBalancePayment(mortgageInsurancePRB.remainingPayment, mortgageFO.getLoanComponent(), isLastPeriod, nextProcessDate);
+        final LoanFOCProcessorContext loanProcessorContext = processorContext.getLoanFOProcessorContext(loanPRB.obligationPayment);
+        loanFOCProcessor.processPayment(loanProcessorContext, mortgageFO.getLoanComponent(), nextProcessDate);
 
         final MortgageFOPeriod period = MortgageFOPeriod.builder()
                 .periodNumber(mortgagePeriodNum)
@@ -57,6 +75,7 @@ public class MortgageFOProcessor implements FOProcessor<MortgageFOProcessorConte
                 .loanContribution(loanProcessorContext.getPrincipalDelta())
                 .newLoanBalance(loanProcessorContext.getPrincipalBalance())
                 .insuranceContribution(homeInsuranceContext.getPaymentUsed())
+                .mortgageInsuranceContribution(mortgageInsuranceFOCProcessorContext.getPaymentUsed())
                 .payment(requiredPayment)
                 .startDate(mortgageFO.getLastProcessedDate())
                 .endDate(nextProcessDate)
@@ -64,6 +83,11 @@ public class MortgageFOProcessor implements FOProcessor<MortgageFOProcessorConte
 
         processorContext.incrementMortgageContext(period);
         mortgageFO.setLastProcessedDate(period.getEndDate());
+
+        // Implement End of process
+        loanFOCProcessor.processEndOfPeriod(loanProcessorContext, mortgageFO.getLoanComponent(), nextProcessDate);
+        insuranceFOCProcessor.processEndOfPeriod(homeInsuranceContext, mortgageFO.getHomeInsuranceComponent(), nextProcessDate);
+        mortgageInsuranceFOCProcessor.processEndOfPeriod(mortgageInsuranceFOCProcessorContext, mortgageFO.getMortgageInsuranceComponent(), nextProcessDate);
     }
 
     @Override
@@ -86,7 +110,6 @@ public class MortgageFOProcessor implements FOProcessor<MortgageFOProcessorConte
 
     public double getRequiredPayment(MortgageFO mortgageFO, LocalDate processDate) {
         final LoanFOC loan = mortgageFO.getLoanComponent();
-        final InsuranceFOC homeInsurance = mortgageFO.getHomeInsuranceComponent();
         final boolean isLastPeriod = isLastPeriod(mortgageFO);
         double loanPayment = loan.getScheduledPaymentPerPeriod();
 
@@ -94,7 +117,13 @@ public class MortgageFOProcessor implements FOProcessor<MortgageFOProcessorConte
             loanPayment = loan.getLoanCurrentPrinciple() + loanFOCProcessor.getAccruedInterestForPeriod(loan, processDate);
         }
 
-        return RoundingUtil.roundValue(loanPayment + homeInsurance.getScheduledPaymentAmount());
+        List<Double> paymentList = List.of(
+                loanPayment,
+                mortgageFO.getHomeInsuranceComponent().getScheduledPaymentAmount(),
+                mortgageFO.getMortgageInsuranceComponent().getScheduledPayment()
+            );
+
+        return RoundingUtil.roundValue(paymentList.stream().reduce(0.0, Double::sum));
     }
 
     private boolean isLastPeriod(MortgageFO mortgageFO) {
@@ -107,5 +136,36 @@ public class MortgageFOProcessor implements FOProcessor<MortgageFOProcessorConte
             return true;
         }
         return periodsToProcess > periodsProcessed;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    class PaymentAndRemainingBalance {
+        private final double obligationPayment;
+        private final double remainingPayment;
+    }
+
+    private PaymentAndRemainingBalance calculateHomeInsuranceBalancePayment(final Double remainingPayment, final InsuranceFOC insuranceFOC) {
+        final double obligationPayment = Math.min(insuranceFOC.getScheduledPaymentAmount(), remainingPayment);
+        final double newRemainingPayment = RoundingUtil.roundValueWithMinCap(remainingPayment - obligationPayment, 0.0);
+        return new PaymentAndRemainingBalance(obligationPayment, newRemainingPayment);
+    }
+
+    private PaymentAndRemainingBalance calculateMortgageInsuranceBalancePayment(final Double remainingPayment, final MortgageInsuranceFOC insuranceFOC) {
+        final double obligationPayment = Math.min(insuranceFOC.getScheduledPayment(), remainingPayment);
+        final double newRemainingPayment = RoundingUtil.roundValueWithMinCap(remainingPayment - obligationPayment, 0.0);
+        return new PaymentAndRemainingBalance(obligationPayment, newRemainingPayment);
+    }
+
+    private PaymentAndRemainingBalance calculateLoanBalancePayment(final Double remainingPayment, final LoanFOC loanFOC, final boolean isLastPeriod, final LocalDate processDate) {
+        double loanPayment = loanFOC.getScheduledPaymentPerPeriod();
+
+        if (isLastPeriod) {
+            loanPayment = loanFOC.getLoanCurrentPrinciple() + loanFOCProcessor.getAccruedInterestForPeriod(loanFOC, processDate);
+        }
+
+        final double obligationPayment = RoundingUtil.roundValue(loanPayment);
+        final double newRemainingPayment = RoundingUtil.roundValueWithMinCap(remainingPayment - obligationPayment, 0.0);
+        return new PaymentAndRemainingBalance(obligationPayment, newRemainingPayment);
     }
 }

@@ -63,4 +63,39 @@ public class RoundingUtilTest {
     public void roundValueDown_roundUpHalf() {
         Assertions.assertEquals(5.37, RoundingUtil.roundValueDown(5.375));
     }
+
+    @Test
+    public void roundValueWithMinCap_sameValue() {
+        Assertions.assertEquals(5.25, RoundingUtil.roundValueWithMinCap(5.25, 0.0));
+    }
+
+    @Test
+    public void roundValueWithMinCap_minValue() {
+        Assertions.assertEquals(10.0, RoundingUtil.roundValueWithMinCap(5.25, 10.0));
+    }
+
+    @Test
+    public void roundValueWithMaxCap_sameValue() {
+        Assertions.assertEquals(5.25, RoundingUtil.roundValueWithMaxCap(5.25, 10.0));
+    }
+
+    @Test
+    public void roundValueWithMaxCap_maxValue() {
+        Assertions.assertEquals(0.0, RoundingUtil.roundValueWithMaxCap(5.25, 0.0));
+    }
+
+    @Test
+    public void roundValueWithCaps_sameValue() {
+        Assertions.assertEquals(5.25, RoundingUtil.roundValueWithCaps(5.25, 10.0, 0.0));
+    }
+
+    @Test
+    public void roundValueWithCaps_maxValue() {
+        Assertions.assertEquals(10.0, RoundingUtil.roundValueWithCaps(12.0, 10.0, 0.0));
+    }
+
+    @Test
+    public void roundValueWithCaps_minValue() {
+        Assertions.assertEquals(0.0, RoundingUtil.roundValueWithCaps(-1.0, 10.0, 0.0));
+    }
 }

@@ -12,14 +12,15 @@ public class InsuranceFOCProcessor implements FOCProcessor<InsuranceFOCProcessor
     //  Assumes that Payment is greater or equal to scheduled payment, add exception logic
     //  Add Late logic
     @Override
-    public void process(final InsuranceFOCProcessorContext processorContext, final InsuranceFOC insurance, final LocalDate processDate) {
+    public void processPayment(final InsuranceFOCProcessorContext processorContext, final InsuranceFOC insurance, final LocalDate processDate) {
+
         final Double payment = processorContext.getPayment();
         final Double scheduledPayment = insurance.getScheduledPaymentAmount();
 
-        final Double newBalance = insurance.applyPayment(scheduledPayment);
+        final Double newBalance = insurance.applyPayment(payment);
 
-        processorContext.setPaymentUsed(scheduledPayment);
-        processorContext.setPaymentRemaining(RoundingUtil.roundValue(payment - scheduledPayment));
+        processorContext.setPaymentUsed(payment);
+        processorContext.setPaymentRemaining(Math.max(RoundingUtil.roundValue(payment - scheduledPayment), 0.0));
         processorContext.setPeriodBalance(newBalance);
         processorContext.setPeriodReset(false);
 
@@ -28,5 +29,10 @@ public class InsuranceFOCProcessor implements FOCProcessor<InsuranceFOCProcessor
             insurance.resetPeriod(nextPeriodStartDate);
             processorContext.setPeriodReset(true);
         }
+    }
+
+    @Override
+    public void processEndOfPeriod(final InsuranceFOCProcessorContext processorContext, final InsuranceFOC insurance, final LocalDate processDate) {
+
     }
 }

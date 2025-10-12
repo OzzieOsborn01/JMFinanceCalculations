@@ -1,0 +1,23 @@
+{
+  "exampleOutput": {
+    "loanAmount_interestDecimal_ScheduledPayment": [
+      ["periodBalance", "periodReset"]
+    ]
+  },
+  "results": {
+    "4000.0_YEARLY": [
+      [3666.67, false],
+      [3333.34, false],
+      [3000.01, false],
+      [2666.68, false],
+      [2333.35, false],
+      [2000.02, false],
+      [1666.69, false],
+      [1333.36, false],
+      [1000.03, false],
+      [666.7, false],
+      [333.37, false],
+      [0.04, false]
+    ]
+  }
+}

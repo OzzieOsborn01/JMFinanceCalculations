@@ -6,5 +6,11 @@ import org.finance.calcs.processing.common.model.FOCProcessorContext;
 import java.time.LocalDate;
 
 public interface FOCProcessor<Context extends FOCProcessorContext, FOCComp extends FinancialObligationComponent> {
-    void process(Context processorContext, FOCComp focComponent, LocalDate processDate);
+    void processPayment(Context processorContext, FOCComp focComponent, LocalDate processDate);
+
+    void processEndOfPeriod(Context processorContext, FOCComp focComponent, LocalDate processDate);
+
+    default void processTransaction(Context processorContext, FOCComp focComponent, LocalDate processDate) {
+
+    }
 }

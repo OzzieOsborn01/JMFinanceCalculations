@@ -6,6 +6,7 @@ import org.finance.calcs.processing.model.context.MortgageFOProcessorContext;
 import org.finance.calcs.processing.model.obligationPeriod.MortgageFOPeriod;
 import org.finance.calcs.processing.processors.components.InsuranceFOCProcessor;
 import org.finance.calcs.processing.processors.components.LoanFOCProcessor;
+import org.finance.calcs.processing.processors.components.MortgageInsuranceFOCProcessor;
 import org.finance.calcs.processing.testing.constructs.MortgageFOProcessorTestContext;
 import org.finance.calcs.processing.testing.mappers.MortgageFOProcessorTestContextMapper;
 import org.junit.jupiter.api.Assertions;
@@ -26,7 +27,8 @@ public class MortgageFOProcessorTest {
     public void setUp() {
         mortgageFOProcessor = new MortgageFOProcessor(
                 new LoanFOCProcessor(),
-                new InsuranceFOCProcessor()
+                new InsuranceFOCProcessor(),
+                new MortgageInsuranceFOCProcessor()
         );
     }
 
@@ -39,29 +41,32 @@ public class MortgageFOProcessorTest {
 
         final MortgageFOPeriod mortgageFOPeriod1 = MortgageFOPeriod.builder()
                 .periodNumber(1)
-                .payment(5042.31)
+                .payment(5142.31)
                 .startDate(startDate)
                 .endDate(LocalDate.of(2025, 10, 1))
                 .newLoanBalance(774246.75)
                 .interestContribution(3955.73)
                 .loanContribution(753.25)
                 .insuranceContribution(333.33)
+                .mortgageInsuranceContribution(100.0)
                 .build();
         final MortgageFOPeriod mortgageFOPeriod2 = MortgageFOPeriod.builder()
                 .periodNumber(2)
-                .payment(5042.31)
+                .payment(5142.31)
                 .startDate(LocalDate.of(2025, 10, 1))
                 .endDate(LocalDate.of(2025, 11, 1))
                 .newLoanBalance(773489.65)
                 .interestContribution(3951.88)
                 .loanContribution(757.1)
                 .insuranceContribution(333.33)
+                .mortgageInsuranceContribution(100.0)
                 .build();
         final MortgageFOProcessorContext expectedContextIter1 = MortgageFOProcessorContext.builder()
-                .currentPayment(5042.31)
-                .totalPayments(5042.31)
+                .currentPayment(5142.31)
+                .totalPayments(5142.31)
                 .totalInterestContribution(3955.73)
                 .totalInsuranceContribution(333.33)
+                .totalMortgageInsuranceContribution(100.0)
                 .totalLoanContribution(753.25)
                 .lastProcessedDate(LocalDate.of(2025, 10, 1))
                 .mortgagePeriodList(List.of(mortgageFOPeriod1))
@@ -74,11 +79,12 @@ public class MortgageFOProcessorTest {
         Assertions.assertEquals(expectedContextIter1, context);
 
         final MortgageFOProcessorContext expectedContextIter2 = MortgageFOProcessorContext.builder()
-                .currentPayment(5042.31)
-                .totalPayments(10084.62)
+                .currentPayment(5142.31)
+                .totalPayments(10284.62)
                 .totalInterestContribution(7907.61)
                 .totalLoanContribution(1510.35)
                 .totalInsuranceContribution(666.66)
+                .totalMortgageInsuranceContribution(200.0)
                 .lastProcessedDate(LocalDate.of(2025, 11, 1))
                 .mortgagePeriodList(List.of(mortgageFOPeriod1, mortgageFOPeriod2))
                 .build();
@@ -95,11 +101,12 @@ public class MortgageFOProcessorTest {
                 .build();
 
         MortgageFOProcessorTestContext expectedEndingContext = MortgageFOProcessorTestContext.builder()
-                .currentPayment(5043.94)
-                .totalPayments(1815233.23)
+                .currentPayment(5143.94)
+                .totalPayments(1851233.23)
                 .totalInterestContribution(920234.43)
                 .totalLoanContribution(775000.0)
                 .totalInsuranceContribution(119998.8)
+                .totalMortgageInsuranceContribution(36000.0)
                 .lastProcessedDate(LocalDate.of(2055, 9, 1))
                 .build();
 
@@ -118,11 +125,12 @@ public class MortgageFOProcessorTest {
                 .build();
 
         MortgageFOProcessorTestContext expectedEndingContext = MortgageFOProcessorTestContext.builder()
-                .currentPayment(5042.31)
-                .totalPayments(50423.1)
+                .currentPayment(5142.31)
+                .totalPayments(51423.1)
                 .totalInterestContribution(39381.9)
                 .totalLoanContribution(7707.9)
                 .totalInsuranceContribution(3333.3)
+                .totalMortgageInsuranceContribution(1000.0)
                 .lastProcessedDate(LocalDate.of(2026, 7, 1))
                 .build();
 
@@ -141,11 +149,12 @@ public class MortgageFOProcessorTest {
                 .build();
 
         MortgageFOProcessorTestContext expectedEndingContext = MortgageFOProcessorTestContext.builder()
-                .currentPayment(5043.94)
-                .totalPayments(1815233.23)
+                .currentPayment(5143.94)
+                .totalPayments(1851233.23)
                 .totalInterestContribution(920234.43)
                 .totalLoanContribution(775000.0)
                 .totalInsuranceContribution(119998.8)
+                .totalMortgageInsuranceContribution(36000.0)
                 .lastProcessedDate(LocalDate.of(2055, 9, 1))
                 .build();
 

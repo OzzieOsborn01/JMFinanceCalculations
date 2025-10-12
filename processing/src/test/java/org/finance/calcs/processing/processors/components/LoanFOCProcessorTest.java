@@ -46,7 +46,7 @@ public class LoanFOCProcessorTest {
         final LoanFOCProcessorContext context = LoanFOCProcessorContext.builder()
                 .payment(loan.getScheduledPaymentPerPeriod())
                 .build();
-        loanFOCProcessor.process(context, loan, LocalDate.of(2025, 10, 1));
+        loanFOCProcessor.processPayment(context, loan, LocalDate.of(2025, 10, 1));
 
         Assertions.assertEquals(expectedContext, context);
     }
@@ -60,7 +60,7 @@ public class LoanFOCProcessorTest {
         final LoanFOCProcessorContext context = LoanFOCProcessorContext.builder()
                 .payment(10.0)
                 .build();
-        loanFOCProcessor.process(context, loan, LocalDate.of(2025, 10, 1));
+        loanFOCProcessor.processPayment(context, loan, LocalDate.of(2025, 10, 1));
 
         Assertions.assertEquals(775000.0, context.getPrincipalBalance());
         Assertions.assertEquals(0.0, context.getPrincipalDelta());
@@ -96,7 +96,7 @@ public class LoanFOCProcessorTest {
                 .build();
 
 
-            loanFOCProcessor.process(context, loan, workingDate);
+            loanFOCProcessor.processPayment(context, loan, workingDate);
 
 
             Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
@@ -120,7 +120,7 @@ public class LoanFOCProcessorTest {
 
         context.setPayment(finalPayment);
 
-        loanFOCProcessor.process(context, loan, workingDate);
+        loanFOCProcessor.processPayment(context, loan, workingDate);
         Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
     }
 
