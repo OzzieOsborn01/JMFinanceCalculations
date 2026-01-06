@@ -4,11 +4,20 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/JMFinanceCalculations.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/JMFinanceCalculations.app.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/JMFinanceCalculations.app.test.iml" filepath="$PROJECT_DIR$/.idea/modules/app/JMFinanceCalculations.app.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/JMFinanceCalculations.app.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/app/JMFinanceCalculations.app.testFixtures.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/buildSrc/JMFinanceCalculations.buildSrc.iml" filepath="$PROJECT_DIR$/.idea/modules/buildSrc/JMFinanceCalculations.buildSrc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/buildSrc/JMFinanceCalculations.buildSrc.main.iml" filepath="$PROJECT_DIR$/.idea/modules/buildSrc/JMFinanceCalculations.buildSrc.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/buildSrc/JMFinanceCalculations.buildSrc.test.iml" filepath="$PROJECT_DIR$/.idea/modules/buildSrc/JMFinanceCalculations.buildSrc.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/buildSrc/JMFinanceCalculations.buildSrc.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/buildSrc/JMFinanceCalculations.buildSrc.testFixtures.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/JMFinanceCalculations.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/JMFinanceCalculations.core.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/JMFinanceCalculations.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/JMFinanceCalculations.core.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/JMFinanceCalculations.core.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/core/JMFinanceCalculations.core.testFixtures.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/JMFinanceCalculations.main.iml" filepath="$PROJECT_DIR$/.idea/modules/JMFinanceCalculations.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/processing/JMFinanceCalculations.processing.main.iml" filepath="$PROJECT_DIR$/.idea/modules/processing/JMFinanceCalculations.processing.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/processing/JMFinanceCalculations.processing.test.iml" filepath="$PROJECT_DIR$/.idea/modules/processing/JMFinanceCalculations.processing.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/processing/JMFinanceCalculations.processing.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/processing/JMFinanceCalculations.processing.testFixtures.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/JMFinanceCalculations.test.iml" filepath="$PROJECT_DIR$/.idea/modules/JMFinanceCalculations.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/JMFinanceCalculations.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/JMFinanceCalculations.testFixtures.iml" />
     </modules>
   </component>
 </project>

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NonNull;
 import org.finance.calcs.core.enums.EMortgageInsuranceType;
 import org.finance.calcs.core.enums.EPaymentFrequency;
+import org.finance.calcs.core.enums.ETerminationConditionFactor;
 import org.finance.calcs.core.model.metadata.ObligationTerminationStrategy;
 import org.finance.calcs.core.model.calculations.PaymentCalculation;
 import org.finance.calcs.core.percent.Percent;
@@ -23,6 +24,9 @@ public class MortgageInsuranceTerms {
 
     @NonNull
     private Double loanValue;
+
+    @NonNull
+    private ETerminationConditionFactor terminationConditionFactor;
 
     @NonNull
     @Builder.Default

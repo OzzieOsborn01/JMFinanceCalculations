@@ -1,7 +1,5 @@
 package org.finance.calcs.core.model.obligationBase;
 
-import org.finance.calcs.core.percent.Percent;
-
 public interface FinancialObligationComponent {
 
     default double applyPayment(double paymentAmount){
@@ -15,6 +13,4 @@ public interface FinancialObligationComponent {
     double applyDecreasingBalance(double amount);
 
     double applyIncreasingBalance(double amount);
-
-    void adjustYearlyRate(Double base, Percent percent);
 }

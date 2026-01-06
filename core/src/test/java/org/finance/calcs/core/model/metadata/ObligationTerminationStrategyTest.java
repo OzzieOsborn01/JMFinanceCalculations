@@ -1,7 +1,6 @@
 package org.finance.calcs.core.model.metadata;
 
 import org.finance.calcs.core.enums.ETerminationConditionComparison;
-import org.finance.calcs.core.enums.ETerminationConditionFactor;
 import org.finance.calcs.core.percent.Percent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -46,7 +45,6 @@ public class ObligationTerminationStrategyTest {
     ) {
         ObligationTerminationStrategy<T> strategyToTest = ObligationTerminationStrategy.<T>builder()
                 .comparisonMethod(comparisonMethod)
-                .terminationConditionFactor(ETerminationConditionFactor.OBLIGATION_COMPLETED)
                 .terminationConditionValue(value1)
                 .build();
 

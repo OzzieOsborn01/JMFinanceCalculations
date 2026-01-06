@@ -17,10 +17,4 @@ public class InterestFOC implements FinancialObligationComponent {
         currentInterestBalance = currentInterestBalance + increaseAmount;
         return currentInterestBalance;
     }
-
-    @Override
-    public void adjustYearlyRate(Double base, Percent percent) {
-        // No Op
-        return;
-    }
 }

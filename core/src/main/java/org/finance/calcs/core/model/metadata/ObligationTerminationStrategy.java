@@ -4,14 +4,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 import org.finance.calcs.core.enums.ETerminationConditionComparison;
-import org.finance.calcs.core.enums.ETerminationConditionFactor;
 
 @Data
 @Builder
 public class ObligationTerminationStrategy <T extends Comparable<T>> {
-    @NonNull
-    private ETerminationConditionFactor terminationConditionFactor;
-
     @NonNull
     private T terminationConditionValue;
 

@@ -34,7 +34,9 @@ public class MortgageInsuranceFOCProcessor implements FOCProcessor<MortgageInsur
         final LocalDate nextPeriodStartDate = mortgageInsurance.getNextPeriodStartDate();
         if (nextPeriodStartDate.isBefore(processDate)) {
             mortgageInsurance.resetPeriod(nextPeriodStartDate);
+            mortgageInsurance.determineTerminationScore(processorContext.getUseSoftTerminationStrategy());
         }
+        processUpdateMortgageInsuranceConditions(processorContext, mortgageInsurance);
     }
 
     public void processUpdateMortgageInsuranceConditions(MortgageInsuranceFOCProcessorContext processorContext, MortgageInsuranceFOC mortgageInsurance) {

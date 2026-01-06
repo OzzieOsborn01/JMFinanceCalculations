@@ -16,6 +16,7 @@ import org.finance.calcs.core.model.metadata.PersonalDetails;
 import org.finance.calcs.core.model.calculations.PaymentCalculation;
 import org.finance.calcs.core.percent.Percent;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
 
@@ -182,17 +183,54 @@ public final class MakeJMFCCoreFOC {
                 .houseValue(875000.0)
                 .loanValue(775000.0)
                 .paymentCalculation(new PaymentCalculation(100.0))
+                .terminationConditionFactor(ETerminationConditionFactor.OBLIGATION_COMPLETED)
                 .softBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
                         .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
-                        .terminationConditionFactor(ETerminationConditionFactor.OBLIGATION_COMPLETED)
                         .terminationConditionValue(Percent.fromPercent(20.0, 4).decreaseReversePercentage())
                         .terminationConditionDescription("Soft Balance Condition")
                         .build())
                 .hardBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
                         .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
-                        .terminationConditionFactor(ETerminationConditionFactor.OBLIGATION_COMPLETED)
                         .terminationConditionValue(Percent.fromPercent(22.0, 4).decreaseReversePercentage())
                         .terminationConditionDescription("Hard Balance Condition")
+                        .build())
+                .build();
+    }
+    public static MortgageInsuranceTerms aMortgageInsurancePremiumEndingDurationTerms() {
+        return MortgageInsuranceTerms.builder()
+                .mortgageInsuranceType(EMortgageInsuranceType.MORTGAGE_INSURANCE_PREMIUMS)
+                .houseValue(875000.0)
+                .loanValue(775000.0)
+                .paymentCalculation(new PaymentCalculation(100.0))
+                .terminationConditionFactor(ETerminationConditionFactor.DURATION_COMPLETED)
+                .softDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                        .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(9L)
+                        .terminationConditionDescription("Soft Duration Condition")
+                        .build())
+                .hardDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                        .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(11L)
+                        .terminationConditionDescription("Hard Duration Condition")
+                        .build())
+                .build();
+    }
+    public static MortgageInsuranceTerms aMortgageInsurancePremiumNotEndingDurationTerms() {
+        return MortgageInsuranceTerms.builder()
+                .mortgageInsuranceType(EMortgageInsuranceType.MORTGAGE_INSURANCE_PREMIUMS)
+                .houseValue(875000.0)
+                .loanValue(775000.0)
+                .paymentCalculation(new PaymentCalculation(100.0))
+                .terminationConditionFactor(ETerminationConditionFactor.NOT_ENDING)
+                .softDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                        .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(10L)
+                        .terminationConditionDescription("Soft Duration Condition")
+                        .build())
+                .hardDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                        .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(15L)
+                        .terminationConditionDescription("Hard Duration Condition")
                         .build())
                 .build();
     }

@@ -3,9 +3,12 @@ package org.finance.calcs.processing.processors.components;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.finance.calcs.core.enums.ETerminationConditionComparison;
+import org.finance.calcs.core.enums.ETerminationConditionFactor;
 import org.finance.calcs.core.factories.MortgageInsuranceFOCFactory;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceFOC;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceTerms;
+import org.finance.calcs.core.model.metadata.ObligationTerminationStrategy;
 import org.finance.calcs.core.testingUtils.MakeJMFCCoreFOC;
 import org.finance.calcs.processing.model.context.MortgageInsuranceFOCProcessorContext;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -30,7 +34,7 @@ public class MortgageInsuranceFOCProcessorTest {
 
     @Test
     public void processPayment_SingleIteration_PrivateMortgageInsurance() {
-        final MortgageInsuranceTerms terms = MakeJMFCCoreFOC.aPrivateMortgageInsuranceTerms();
+        final MortgageInsuranceTerms terms = MakeJMFCCoreFOC.aMortgageInsurancePremiumEndingDurationTerms();
         terms.setStartDate(LocalDate.of(2025, 9, 1));
         final MortgageInsuranceFOC insurance = MortgageInsuranceFOCFactory.createMortgageInsuranceFOC(terms);
 
@@ -72,7 +76,7 @@ public class MortgageInsuranceFOCProcessorTest {
     }
 
     @Test
-    public void process_FullIteration() throws IOException {
+    public void process_FullIteration_Balance() throws IOException {
         final MortgageInsuranceTerms terms = MakeJMFCCoreFOC.aPrivateMortgageInsuranceTerms();
         terms.setStartDate(LocalDate.of(2025, 9, 1));
         final MortgageInsuranceFOC insurance = MortgageInsuranceFOCFactory.createMortgageInsuranceFOC(terms);
@@ -128,6 +132,149 @@ public class MortgageInsuranceFOCProcessorTest {
             Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
             iteration++;
             workingDate = workingDate.plusMonths(1);
+            processorToTest.processEndOfPeriod(context, insurance, workingDate);
+        }
+    }
+
+    @Test
+    public void process_FullIteration_Duration() throws IOException {
+        final MortgageInsuranceTerms terms = MakeJMFCCoreFOC.aMortgageInsurancePremiumEndingDurationTerms();
+        terms.setDurationTermUnits(ChronoUnit.MONTHS);
+        terms.setHardDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                .terminationConditionValue(12L)
+                .terminationConditionDescription("Hard Duration Condition")
+                .build());
+        terms.setSoftDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                .terminationConditionValue(8L)
+                .terminationConditionDescription("Soft Duration Condition")
+                .build());
+        terms.setStartDate(LocalDate.of(2025, 9, 1));
+        final MortgageInsuranceFOC insurance = MortgageInsuranceFOCFactory.createMortgageInsuranceFOC(terms);
+
+        final MortgageInsuranceFOCProcessorContext context = MortgageInsuranceFOCProcessorContext.builder()
+                .payment(insurance.getScheduledPayment())
+                .houseValue(terms.getHouseValue())
+                .loanValue(terms.getLoanValue())
+                .build();
+
+        int iteration = 1;
+        LocalDate workingDate = LocalDate.of(2025, 9, 1).plusMonths(1);
+        ArrayList<ArrayList<Object>> expectedResults = getFOCProcessorOutputExpectedResult("MIP_Duration_100.0_12-Iteration_Plus-4-Skip-Iteration");
+        while (iteration <= 12) {
+            int workingIter = iteration - 1;
+            final MortgageInsuranceFOCProcessorContext expectedContext = MortgageInsuranceFOCProcessorContext.builder()
+                    .paymentUsed((Double)expectedResults.get(workingIter).get(1))
+                    .payment(insurance.getScheduledPayment())
+                    .paymentRemaining(0.0)
+                    .periodBalance((Double)expectedResults.get(workingIter).get(0))
+                    .houseValue(terms.getHouseValue())
+                    .loanValue(terms.getLoanValue())
+                    .build();
+
+            processorToTest.processPayment(context, insurance, workingDate);
+
+            Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
+            iteration++;
+            workingDate = workingDate.plusMonths(1);
+
+            processorToTest.processEndOfPeriod(context, insurance, workingDate);
+        }
+
+        context.setHouseValue(500000.0);
+        context.setLoanValue(50.0);
+        processorToTest.processUpdateMortgageInsuranceConditions(context, insurance);
+
+        while (iteration <= 16) {
+            int workingIter = iteration - 1;
+            final MortgageInsuranceFOCProcessorContext expectedContext = MortgageInsuranceFOCProcessorContext.builder()
+                    .paymentUsed((Double)expectedResults.get(workingIter).get(1))
+                    .payment(insurance.getScheduledPayment())
+                    .paymentRemaining(insurance.getScheduledPayment())
+                    .periodBalance((Double)expectedResults.get(workingIter).get(0))
+                    .houseValue(500000.0)
+                    .loanValue(50.0)
+                    .skipped(true)
+                    .build();
+
+            processorToTest.processPayment(context, insurance, workingDate);
+
+            Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
+            iteration++;
+            workingDate = workingDate.plusMonths(1);
+            processorToTest.processEndOfPeriod(context, insurance, workingDate);
+        }
+    }
+
+    @Test
+    public void process_FullIteration_Duration_NotEnding() throws IOException {
+        final MortgageInsuranceTerms terms = MakeJMFCCoreFOC.aMortgageInsurancePremiumEndingDurationTerms();
+        terms.setDurationTermUnits(ChronoUnit.MONTHS);
+        terms.setTerminationConditionFactor(ETerminationConditionFactor.NOT_ENDING);
+        terms.setHardDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                .terminationConditionValue(11L)
+                .terminationConditionDescription("Hard Duration Condition")
+                .build());
+        terms.setSoftDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                .terminationConditionValue(8L)
+                .terminationConditionDescription("Soft Duration Condition")
+                .build());
+        terms.setStartDate(LocalDate.of(2025, 9, 1));
+        final MortgageInsuranceFOC insurance = MortgageInsuranceFOCFactory.createMortgageInsuranceFOC(terms);
+
+        final MortgageInsuranceFOCProcessorContext context = MortgageInsuranceFOCProcessorContext.builder()
+                .payment(insurance.getScheduledPayment())
+                .houseValue(terms.getHouseValue())
+                .loanValue(terms.getLoanValue())
+                .build();
+
+        int iteration = 1;
+        LocalDate workingDate = LocalDate.of(2025, 9, 1).plusMonths(1);
+        ArrayList<ArrayList<Object>> expectedResults = getFOCProcessorOutputExpectedResult("MIP_NotEndingDuration_100.0_12-Iteration_Plus-4-Skip-Iteration");
+        while (iteration <= 12) {
+            int workingIter = iteration - 1;
+            final MortgageInsuranceFOCProcessorContext expectedContext = MortgageInsuranceFOCProcessorContext.builder()
+                    .paymentUsed((Double)expectedResults.get(workingIter).get(1))
+                    .payment(insurance.getScheduledPayment())
+                    .paymentRemaining(0.0)
+                    .periodBalance((Double)expectedResults.get(workingIter).get(0))
+                    .houseValue(terms.getHouseValue())
+                    .loanValue(terms.getLoanValue())
+                    .build();
+
+            processorToTest.processPayment(context, insurance, workingDate);
+
+            Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
+            iteration++;
+            workingDate = workingDate.plusMonths(1);
+            processorToTest.processEndOfPeriod(context, insurance, workingDate);
+        }
+
+        context.setHouseValue(500000.0);
+        context.setLoanValue(50.0);
+        processorToTest.processUpdateMortgageInsuranceConditions(context, insurance);
+
+        while (iteration <= 16) {
+            int workingIter = iteration - 1;
+            final MortgageInsuranceFOCProcessorContext expectedContext = MortgageInsuranceFOCProcessorContext.builder()
+                    .paymentUsed((Double)expectedResults.get(workingIter).get(1))
+                    .payment(insurance.getScheduledPayment())
+                    .paymentRemaining(0.0)
+                    .periodBalance((Double)expectedResults.get(workingIter).get(0))
+                    .houseValue(500000.0)
+                    .loanValue(50.0)
+                    .skipped(false)
+                    .build();
+
+            processorToTest.processPayment(context, insurance, workingDate);
+
+            Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
+            iteration++;
+            workingDate = workingDate.plusMonths(1);
+            processorToTest.processEndOfPeriod(context, insurance, workingDate);
         }
     }
 
