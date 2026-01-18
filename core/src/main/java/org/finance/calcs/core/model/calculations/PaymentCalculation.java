@@ -25,7 +25,7 @@ public class PaymentCalculation {
     public PaymentCalculation(Double paymentFlatRate) {
         this.paymentPercentBase = 0.0;
         this.paymentPercentRate = Percent.ZERO_PERCENT;
-        this.paymentFlatRate = paymentFlatRate;
+        this.paymentFlatRate = RoundingUtil.roundValue(paymentFlatRate);
         this.paymentCalcType = EPaymentCalcType.FLAT_PAYMENT;
     }
 

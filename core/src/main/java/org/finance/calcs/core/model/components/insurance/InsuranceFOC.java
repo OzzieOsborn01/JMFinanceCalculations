@@ -96,11 +96,6 @@ public class InsuranceFOC implements FinancialObligationComponent {
         this.periodEndDate = insurancePeriodDuration.getNextDate(startDate);
     }
 
-    public void adjustYearlyRate(Double base, Percent percent) {
-        adjustScheduledPayment(this.insurancePeriodDuration, this.paymentFrequency,
-                new PaymentCalculation(base, percent));
-    }
-
     void adjustScheduledPayment(
             final EPaymentFrequency scheduledPaymentFrequency,
             final EPaymentFrequency insurancePeriodDuration,
