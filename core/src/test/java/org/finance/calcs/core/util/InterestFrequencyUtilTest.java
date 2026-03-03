@@ -4,6 +4,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.finance.calcs.core.enums.EInterestFrequency;
 import org.finance.calcs.core.enums.EPaymentFrequency;
+import org.finance.calcs.core.model.components.interest.InterestRatePair;
+import org.finance.calcs.core.model.components.interest.InterestRatePairList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,12 +15,12 @@ import java.util.List;
 public class InterestFrequencyUtilTest {
     @Test
     public void calculateDailyBasedInterestRate() {
-        final List<Pair<Integer, Double>> expectedInterestRates =
-                List.of(
-                        Pair.of(31, 0.00016780821917808218)
+        final InterestRatePairList expectedInterestRates =
+                new InterestRatePairList(
+                        new InterestRatePair(31, 0.00016780821917808218)
                 );
 
-        final List<Pair<Integer, Double>> dailyInterestRate =
+        final InterestRatePairList dailyInterestRate =
                 InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
                         EInterestFrequency.DAILY,
                         0.06125,
@@ -42,12 +44,12 @@ public class InterestFrequencyUtilTest {
 
     @Test
     public void calculateDailyBasedInterestRate_LeapYear() {
-        final List<Pair<Integer, Double>> expectedInterestRates =
-                List.of(
-                        Pair.of(31, 0.00016734972677595628)
+        final InterestRatePairList expectedInterestRates =
+                new InterestRatePairList(
+                        new InterestRatePair(31, 0.00016734972677595628)
                 );
 
-        final List<Pair<Integer, Double>> dailyInterestRate =
+        final InterestRatePairList dailyInterestRate =
                 InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
                         EInterestFrequency.DAILY,
                         0.06125,
@@ -60,13 +62,13 @@ public class InterestFrequencyUtilTest {
 
     @Test
     public void calculateDailyBasedInterestRate_LeapYearToRegularYear() {
-        final List<Pair<Integer, Double>> expectedInterestRates =
-                List.of(
-                        Pair.of(16, 0.00016734972677595628),
-                        Pair.of(15, 0.00016780821917808218)
+        final InterestRatePairList expectedInterestRates =
+                new InterestRatePairList(
+                        new InterestRatePair(16, 0.00016734972677595628),
+                        new InterestRatePair(15, 0.00016780821917808218)
                 );
 
-        final List<Pair<Integer, Double>> dailyInterestRate =
+        final InterestRatePairList dailyInterestRate =
                 InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
                         EInterestFrequency.DAILY,
                         0.06125,
@@ -79,13 +81,13 @@ public class InterestFrequencyUtilTest {
 
     @Test
     public void calculateDailyBasedInterestRate_RegularYearToLeapYear() {
-        final List<Pair<Integer, Double>> expectedInterestRates =
-                List.of(
-                        Pair.of(16, 0.00016780821917808218),
-                        Pair.of(15, 0.00016734972677595628)
+        final InterestRatePairList expectedInterestRates =
+                new InterestRatePairList(
+                        new InterestRatePair(16, 0.00016780821917808218),
+                        new InterestRatePair(15, 0.00016734972677595628)
                 );
 
-        final List<Pair<Integer, Double>> dailyInterestRate =
+        final InterestRatePairList dailyInterestRate =
                 InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
                         EInterestFrequency.DAILY,
                         0.06125,
@@ -98,12 +100,12 @@ public class InterestFrequencyUtilTest {
 
     @Test
     public void calculateMonthlyBasedInterestRate_MonthMatch() {
-        final List<Pair<Integer, Double>> expectedInterestRates =
-                List.of(
-                        Pair.of(1, 0.005104166666666667)
+        final InterestRatePairList expectedInterestRates =
+                new InterestRatePairList(
+                       1, 0.005104166666666667
                 );
 
-        final List<Pair<Integer, Double>> dailyInterestRate =
+        final InterestRatePairList dailyInterestRate =
                 InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
                         EInterestFrequency.MONTHLY_12_BY_360,
                         0.06125,
@@ -116,13 +118,13 @@ public class InterestFrequencyUtilTest {
 
     @Test
     public void calculateMonthlyBasedInterestRate_IntraMonth() {
-        final List<Pair<Integer, Double>> expectedInterestRates =
-                List.of(
-                        Pair.of(0, 0.005104166666666667),
-                        Pair.of(15, 0.0001646505376344086)
+        final InterestRatePairList expectedInterestRates =
+                new InterestRatePairList(
+                        new InterestRatePair(0, 0.005104166666666667),
+                        new InterestRatePair(15, 0.0001646505376344086)
                 );
 
-        final List<Pair<Integer, Double>> dailyInterestRate =
+        final InterestRatePairList dailyInterestRate =
                 InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
                         EInterestFrequency.MONTHLY_12_BY_360,
                         0.06125,
@@ -135,13 +137,13 @@ public class InterestFrequencyUtilTest {
 
     @Test
     public void calculateMonthlyBasedInterestRate_InterMonth() {
-        final List<Pair<Integer, Double>> expectedInterestRates =
-                List.of(
-                        Pair.of(2, 0.005104166666666667),
-                        Pair.of(15, 0.0001646505376344086)
+        final InterestRatePairList expectedInterestRates =
+                new InterestRatePairList(
+                        new InterestRatePair(2, 0.005104166666666667),
+                        new InterestRatePair(15, 0.0001646505376344086)
                 );
 
-        final List<Pair<Integer, Double>> dailyInterestRate =
+        final InterestRatePairList dailyInterestRate =
                 InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
                         EInterestFrequency.MONTHLY_12_BY_360,
                         0.06125,
@@ -154,12 +156,12 @@ public class InterestFrequencyUtilTest {
 
     @Test
     public void calculateWeeklyBasedInterestRate() {
-        final List<Pair<Integer, Double>> expectedInterestRates =
-                List.of(
-                        Pair.of(74, 0.00016826923076923076)
+        final InterestRatePairList expectedInterestRates =
+                new InterestRatePairList(
+                        74, 0.00016826923076923076
                 );
 
-        final List<Pair<Integer, Double>> dailyInterestRate =
+        final InterestRatePairList dailyInterestRate =
                 InterestFrequencyUtil.determineDailyInterestRatesByInterestFrequency(
                         EInterestFrequency.WEEKLY_52_BY_364,
                         0.06125,

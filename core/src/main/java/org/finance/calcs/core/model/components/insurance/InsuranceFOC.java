@@ -13,41 +13,76 @@ import org.finance.calcs.core.util.RoundingUtil;
 
 import java.time.LocalDate;
 
+/**
+ * InsuranceFOC is a {@link FinancialObligationComponent} that represents a general insurance obligation that needs to
+ * be paid. Examples include Home Insurance, Auto Insurance, etc.
+ */
 @Data
 @Builder
 @AllArgsConstructor
 public class InsuranceFOC implements FinancialObligationComponent {
+    /**
+     * Calculates the regular payment
+     */
     @NonNull
     private final PaymentCalculation paymentCalculation;
 
+    /**
+     * What is the type of insurance
+     */
     @NonNull
     private final String insuranceType;
 
+    /**
+     * Who provides the insurance
+     */
     @NonNull
     private final String insuranceProvider;
 
+    /**
+     * How often is the regular payment to be made
+     */
     @NonNull
     private EPaymentFrequency paymentFrequency;
 
+    /**
+     * The scheduled minimum payment
+     */
     @NonNull
     private Double scheduledPaymentAmount;
 
+    /**
+     * The regular period of the insurance
+     */
     @NonNull
     private EPaymentFrequency insurancePeriodDuration;
 
-    @NonNull
-    private Double flatRateDurationInsuranceRate;
-
+    /**
+     * The insurance obligation start date
+     */
     @NonNull
     private final LocalDate startDate;
 
+    /**
+     * The current period start date
+     */
     private LocalDate periodStartDate;
 
+    /**
+     * The current period end date
+     */
     private LocalDate periodEndDate;
 
+    /**
+     * The current period balance
+     */
     private Double periodBalance;
 
-    public InsuranceFOC(final InsuranceTerms terms) {
+    /**
+     * Constructor that builds insurance FOC based on the provided terms
+     * @param terms insurance terms
+     */
+    public InsuranceFOC(@NonNull final InsuranceTerms terms) {
         this.insuranceType = terms.getInsuranceType();
         this.insuranceProvider = terms.getInsuranceProvider();
         this.paymentCalculation = terms.getPaymentCalculation();
@@ -55,47 +90,80 @@ public class InsuranceFOC implements FinancialObligationComponent {
         this.periodStartDate = startDate;
         this.periodEndDate = terms.getInsurancePeriodDuration().getNextDate(startDate);
         adjustScheduledPayment(terms.getPaymentFrequency(), terms.getInsurancePeriodDuration(), terms.getPaymentCalculation());
-        this.periodBalance = flatRateDurationInsuranceRate;
+        this.periodBalance = getFlatRateDurationInsuranceRate();
     }
 
+    /**
+     * Get the current annual insurance rate (total insurance for the year)
+     * @return annualized payment amount
+     */
     public Double getAnnualInsuranceRate() {
-        return PaymentFrequencyUtil.paymentRateConverter(flatRateDurationInsuranceRate, insurancePeriodDuration, EPaymentFrequency.YEARLY);
+        return PaymentFrequencyUtil.paymentRateConverter(
+                getFlatRateDurationInsuranceRate(),
+                insurancePeriodDuration,
+                EPaymentFrequency.YEARLY);
     }
 
+    /**
+     * Get the insurance rate percent.
+     * @return
+     */
     public Percent getInsuranceRatePercent() {
         return paymentCalculation.getPaymentPercentRate();
     }
 
+    /**
+     * Get the current insurance period balance
+     * @return
+     */
     public Double getInsurancePeriodBalance() {
         return periodBalance;
     }
 
-    public EPaymentFrequency getScheduledPaymentFrequency() {
-        return paymentFrequency;
-    }
-
+    /**
+     * Get the start date of the next period
+     * @return {@link LocalDate}
+     */
     public LocalDate getNextPeriodStartDate() {
         return insurancePeriodDuration.getNextDate(periodStartDate);
     }
 
+    /**
+     * Provide the payment flat rate
+     * @return the amount owed for all periods
+     */
+    public Double getFlatRateDurationInsuranceRate() {
+        return paymentCalculation.getPaymentFlatRate();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double applyDecreasingBalance(double amount) {
         periodBalance = RoundingUtil.roundValue(periodBalance - amount);
         return periodBalance;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double applyIncreasingBalance(double amount) {
         periodBalance = RoundingUtil.roundValue(periodBalance + amount);
         return periodBalance;
     }
 
-    public void resetPeriod(final LocalDate startDate) {
-        this.periodBalance = flatRateDurationInsuranceRate;
-        this.periodStartDate = startDate;
-        this.periodEndDate = insurancePeriodDuration.getNextDate(startDate);
-    }
-
+    /**
+     * Adjust the insurance payment amounts and frequency
+     * <p/>
+     * Only run this function at the beginning of a period or this will introduce errors
+     * <p/>
+     * TODO: This function could introduce bugs if performed incorrectly. Add safeguards and better protections.
+     * @param scheduledPaymentFrequency
+     * @param insurancePeriodDuration
+     * @param paymentCalculation
+     */
     void adjustScheduledPayment(
             final EPaymentFrequency scheduledPaymentFrequency,
             final EPaymentFrequency insurancePeriodDuration,
@@ -104,12 +172,21 @@ public class InsuranceFOC implements FinancialObligationComponent {
         // TODO: Consider a change current period and adjust next period versions
         this.insurancePeriodDuration = insurancePeriodDuration;
         this.paymentFrequency = scheduledPaymentFrequency;
-        this.flatRateDurationInsuranceRate = paymentCalculation.getPaymentFlatRate();
         this.scheduledPaymentAmount = RoundingUtil.roundValue(
                 PaymentFrequencyUtil.paymentRateConverter(
-                        flatRateDurationInsuranceRate, insurancePeriodDuration, paymentFrequency));
+                        getFlatRateDurationInsuranceRate(), insurancePeriodDuration, paymentFrequency));
 
         // May cause bugs if performed midway through a period
         resetPeriod(startDate);
+    }
+
+    /**
+     * Reset the period to start at the provided period start date and adjust values accordingly
+     * @param startDate next date that should be the period start date
+     */
+    public void resetPeriod(@NonNull final LocalDate startDate) {
+        this.periodBalance = getFlatRateDurationInsuranceRate();
+        this.periodStartDate = startDate;
+        this.periodEndDate = insurancePeriodDuration.getNextDate(startDate);
     }
 }

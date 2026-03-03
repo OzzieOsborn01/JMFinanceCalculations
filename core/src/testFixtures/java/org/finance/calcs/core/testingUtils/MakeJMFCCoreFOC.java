@@ -123,7 +123,6 @@ public final class MakeJMFCCoreFOC {
                 .insuranceProvider(insuranceProvider)
                 .insurancePeriodDuration(periodFrequency)
                 .paymentFrequency(paymentFrequency)
-                .flatRateAnnualInsuranceRate(paymentRate)
                 .build();
     }
     public static InsuranceTerms aRandomFlatPaymentInsuranceTerms() {
@@ -133,7 +132,6 @@ public final class MakeJMFCCoreFOC {
                 .insuranceProvider("garbage company")
                 .insurancePeriodDuration(EPaymentFrequency.YEARLY)
                 .paymentFrequency(EPaymentFrequency.MONTHLY)
-                .flatRateAnnualInsuranceRate((double)random.nextInt(50, 75000))
                 .build();
     }
     public static InsuranceTerms aFlatPaymentInsuranceTerms() {
@@ -143,7 +141,6 @@ public final class MakeJMFCCoreFOC {
                 .insuranceProvider("garbage company")
                 .insurancePeriodDuration(EPaymentFrequency.YEARLY)
                 .paymentFrequency(EPaymentFrequency.MONTHLY)
-                .flatRateAnnualInsuranceRate(4000.0)
                 .build();
     }
 

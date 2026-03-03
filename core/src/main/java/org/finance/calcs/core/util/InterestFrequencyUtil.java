@@ -1,12 +1,12 @@
 package org.finance.calcs.core.util;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.tuple.Pair;
 import org.finance.calcs.core.enums.EInterestFrequency;
+import org.finance.calcs.core.model.components.interest.InterestRatePair;
+import org.finance.calcs.core.model.components.interest.InterestRatePairList;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import static org.finance.calcs.core.constants.DateRelatedConstants.*;
 
@@ -19,17 +19,13 @@ public final class InterestFrequencyUtil {
             final LocalDate lastPeriodEnd,
             final LocalDate currentPeriodEnd
     ) {
-        final List<Pair<Integer, Double>> interestRates =
+        final InterestRatePairList interestRates =
                 determineDailyInterestRatesByInterestFrequency(
                         interestFrequency, annualInterestRate, lastPeriodEnd, currentPeriodEnd);
-
-        final double interestAddition = interestRates.stream()
-                .reduce(0.0, (sum, pair) -> sum + (principle * pair.getLeft() * pair.getRight()), Double::sum);
-
-        return RoundingUtil.roundValue(interestAddition);
+        return interestRates.simplifyAndCalculateInterestAmountRounded(principle);
     }
 
-    public static List<Pair<Integer, Double>> determineDailyInterestRatesByInterestFrequency(
+    public static InterestRatePairList determineDailyInterestRatesByInterestFrequency(
         final EInterestFrequency interestFrequency,
         final double annualInterestRate,
         final LocalDate lastPeriodEnd,
@@ -63,7 +59,7 @@ public final class InterestFrequencyUtil {
         }
     }
 
-    public static List<Pair<Integer, Double>> determineDailyInterestRate(
+    public static InterestRatePairList determineDailyInterestRate(
             final Double annualInterestRate,
             final LocalDate lastPeriodEnd,
             final LocalDate currentPeriodEnd
@@ -80,7 +76,7 @@ public final class InterestFrequencyUtil {
         if (startingDateIsLeapYear == endingDateIsLeapYear) {
             final long durationBetween = ChronoUnit.DAYS.between(workingStartDate, workingEndDate);
             double dailyInterestRate = startingDateIsLeapYear ? leapYearInterestRate : regularYearInterestRate;
-            return List.of(Pair.of((int)durationBetween, dailyInterestRate));
+            return new InterestRatePairList((int)durationBetween, dailyInterestRate);
         }
 
         final long startingPeriodDays =
@@ -89,19 +85,19 @@ public final class InterestFrequencyUtil {
                 ChronoUnit.DAYS.between(LocalDate.of(workingStartDate.getYear() + 1, 1, 1), workingEndDate);
 
         if (startingDateIsLeapYear) {
-            return List.of(
-                    Pair.of((int) startingPeriodDays, leapYearInterestRate),
-                    Pair.of((int) endingPeriodDays, regularYearInterestRate)
+            return new InterestRatePairList(
+                    new InterestRatePair((int) startingPeriodDays, leapYearInterestRate),
+                    new InterestRatePair((int) endingPeriodDays, regularYearInterestRate)
             );
         } else {
-            return List.of(
-                    Pair.of((int) startingPeriodDays, regularYearInterestRate),
-                    Pair.of((int) endingPeriodDays, leapYearInterestRate)
+            return new InterestRatePairList(
+                    new InterestRatePair((int) startingPeriodDays, regularYearInterestRate),
+                    new InterestRatePair((int) endingPeriodDays, leapYearInterestRate)
             );
         }
     }
 
-    public static List<Pair<Integer, Double>> determineDailyByWeeklyInterestRate(
+    public static InterestRatePairList determineDailyByWeeklyInterestRate(
             final Double annualInterestRate,
             final LocalDate lastPeriodEnd,
             final LocalDate currentPeriodEnd
@@ -112,11 +108,12 @@ public final class InterestFrequencyUtil {
         final double interestRate = annualInterestRate / (WEEKS_PER_YEAR * DAYS_PER_WEEK);
 
         final long durationBetween = ChronoUnit.DAYS.between(workingStartDate, workingEndDate);
-        return List.of(Pair.of((int)durationBetween, interestRate));
+
+        return new InterestRatePairList((int)durationBetween, interestRate);
     }
 
 
-    public static List<Pair<Integer, Double>> determineDailyByMonthlyInterestRate(
+    public static InterestRatePairList determineDailyByMonthlyInterestRate(
             final Double annualInterestRate,
             final LocalDate lastPeriodEnd,
             final LocalDate currentPeriodEnd
@@ -129,7 +126,7 @@ public final class InterestFrequencyUtil {
         final int monthsBetween = (int)ChronoUnit.MONTHS.between(workingStartDate, workingEndDate);
         final boolean matchingMonths = workingStartDate.plusMonths(monthsBetween).isEqual(workingEndDate);
         if (matchingMonths) {
-            return List.of(Pair.of(monthsBetween, monthlyInterest));
+            return new InterestRatePairList(monthsBetween, monthlyInterest);
         } else {
             final int betweenDays = (int)ChronoUnit.DAYS.between(
                     workingStartDate.plusMonths(monthsBetween),
@@ -140,7 +137,10 @@ public final class InterestFrequencyUtil {
                     workingStartDate.plusMonths(monthsBetween + 1L)
             );
             final double adjustedDailyInterest = monthlyInterest / daysUntilNextMonth;
-            return List.of(Pair.of(monthsBetween, monthlyInterest), Pair.of(betweenDays, adjustedDailyInterest));
+            return new InterestRatePairList(
+                    new InterestRatePair(monthsBetween, monthlyInterest),
+                    new InterestRatePair(betweenDays, adjustedDailyInterest)
+            );
         }
     }
 }

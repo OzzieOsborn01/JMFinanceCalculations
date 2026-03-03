@@ -1,5 +1,8 @@
 package org.finance.calcs.core.constants;
 
+/**
+ * Date related constants
+ */
 public class DateRelatedConstants {
     public final static Integer MONTHS_PER_YEAR = 12;
     public final static Integer WEEKS_PER_YEAR = 52;

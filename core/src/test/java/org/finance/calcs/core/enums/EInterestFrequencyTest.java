@@ -1,6 +1,8 @@
 package org.finance.calcs.core.enums;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.finance.calcs.core.model.components.interest.InterestRatePair;
+import org.finance.calcs.core.model.components.interest.InterestRatePairList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,7 @@ public class EInterestFrequencyTest {
     @Test
     public void getDailyInterestRates() {
         Assertions.assertEquals(
-                List.of(Pair.of(31, 0.00016780821917808218)),
+                new InterestRatePairList(31, 0.00016780821917808218),
                 EInterestFrequency.DAILY.getDailyInterestRates(
                         0.06125,
                         LocalDate.of(2025, 1, 1),
@@ -20,9 +22,9 @@ public class EInterestFrequencyTest {
                 )
         );
         Assertions.assertEquals(
-                List.of(
-                        Pair.of(0, 0.005104166666666667),
-                        Pair.of(15, 0.0001646505376344086)),
+                new InterestRatePairList(
+                        new InterestRatePair(0, 0.005104166666666667),
+                        new InterestRatePair(15, 0.0001646505376344086)),
                 EInterestFrequency.MONTHLY_12_BY_360.getDailyInterestRates(
                         0.06125,
                         LocalDate.of(2025, 1, 1),
@@ -30,7 +32,7 @@ public class EInterestFrequencyTest {
                 )
         );
         Assertions.assertEquals(
-                List.of(Pair.of(74, 0.00016826923076923076)),
+                new InterestRatePairList(74, 0.00016826923076923076),
                 EInterestFrequency.WEEKLY_52_BY_364.getDailyInterestRates(
                         0.06125,
                         LocalDate.of(2025, 1, 1),
