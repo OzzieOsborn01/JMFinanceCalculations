@@ -1,6 +1,7 @@
 package org.finance.calcs.core.model.components.insurance;
 
 import org.finance.calcs.core.enums.EPaymentFrequency;
+import org.finance.calcs.core.factories.InsuranceFOCFactory;
 import org.finance.calcs.core.model.calculations.PaymentCalculation;
 import org.finance.calcs.core.percent.Percent;
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +34,7 @@ public class InsuranceFOCTests {
                 .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
                 .build();
 
-        final InsuranceFOC insurance = new InsuranceFOC(insuranceTerms);
+        final InsuranceFOC insurance = InsuranceFOCFactory.buildInsuranceFOC(insuranceTerms);
         Assertions.assertEquals(expectedInsuranceFOC, insurance);
     }
 
@@ -59,7 +60,7 @@ public class InsuranceFOCTests {
                 .insuranceProvider("garbage company")
                 .build();
 
-        final InsuranceFOC insurance = new InsuranceFOC(insuranceTerms);
+        final InsuranceFOC insurance = InsuranceFOCFactory.buildInsuranceFOC(insuranceTerms);
         Assertions.assertEquals(expectedInsuranceFOC, insurance);
     }
 
@@ -87,7 +88,7 @@ public class InsuranceFOCTests {
                 .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
                 .build();
 
-        final InsuranceFOC insurance = new InsuranceFOC(insuranceTerms);
+        final InsuranceFOC insurance = InsuranceFOCFactory.buildInsuranceFOC(insuranceTerms);
         insurance.applyPayment(400.0);
         Assertions.assertEquals(expectedInsuranceFOC, insurance);
     }
@@ -116,7 +117,7 @@ public class InsuranceFOCTests {
                 .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
                 .build();
 
-        final InsuranceFOC insurance = new InsuranceFOC(insuranceTerms);
+        final InsuranceFOC insurance = InsuranceFOCFactory.buildInsuranceFOC(insuranceTerms);
         insurance.applyFee(400.0);
         Assertions.assertEquals(expectedInsuranceFOC, insurance);
     }
@@ -132,7 +133,7 @@ public class InsuranceFOCTests {
                 .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
                 .build();
 
-        final InsuranceFOC insurance = new InsuranceFOC(insuranceTerms);
+        final InsuranceFOC insurance = InsuranceFOCFactory.buildInsuranceFOC(insuranceTerms);
         Assertions.assertEquals(8000.0, insurance.getAnnualInsuranceRate());
         Assertions.assertEquals(Percent.ZERO_PERCENT, insurance.getInsuranceRatePercent());
         Assertions.assertEquals(4000.0, insurance.getInsurancePeriodBalance());
@@ -166,7 +167,7 @@ public class InsuranceFOCTests {
                 .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
                 .build();
 
-        final InsuranceFOC insurance = new InsuranceFOC(insuranceTerms);
+        final InsuranceFOC insurance = InsuranceFOCFactory.buildInsuranceFOC(insuranceTerms);
         insurance.adjustScheduledPayment(EPaymentFrequency.MONTHLY, EPaymentFrequency.YEARLY, new PaymentCalculation(4000.0));
         Assertions.assertEquals(expectedInsuranceFOC, insurance);
     }
@@ -195,14 +196,14 @@ public class InsuranceFOCTests {
                 .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
                 .build();
 
-        final InsuranceFOC insurance = new InsuranceFOC(insuranceTerms);
+        final InsuranceFOC insurance = InsuranceFOCFactory.buildInsuranceFOC(insuranceTerms);
         insurance.adjustScheduledPayment(EPaymentFrequency.MONTHLY, EPaymentFrequency.YEARLY, new PaymentCalculation(4000.0));
         Assertions.assertEquals(expectedInsuranceFOC, insurance);
     }
 
     @Test
     public void nullTerms_Exception() {
-        Assertions.assertThrows(NullPointerException.class, () -> new InsuranceFOC(null));
+        Assertions.assertThrows(NullPointerException.class, () -> InsuranceFOCFactory.buildInsuranceFOC(null));
     }
 
     @Test
@@ -216,7 +217,7 @@ public class InsuranceFOCTests {
                 .paymentFrequency(EPaymentFrequency.BI_WEEKLY)
                 .build();
 
-        final InsuranceFOC insurance = new InsuranceFOC(insuranceTerms);
+        final InsuranceFOC insurance = InsuranceFOCFactory.buildInsuranceFOC(insuranceTerms);
         Assertions.assertThrows(NullPointerException.class, () -> insurance.resetPeriod(null));
     }
 }

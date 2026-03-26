@@ -10,18 +10,18 @@ import org.finance.calcs.core.percent.Percent;
 import java.time.LocalDate;
 
 /**
- * * This is the initialization detail and terms of Loan. This class is used to provide initial values
- *  * to the {@link LoanFOC} and establish some default values.
- *  * <p/>
- *  * Term values:
- *  * <ul>
- *  *     <li>Loan initial amount</li>
- *  *     <li>Loan yearly interest rate</li>
- *  *     <li>Loan term in months</li>
- *  *     <li>Required payment frequency (defaults to monthly)</li>
- *  *     <li>Interest frequency (defaults to monthly (12 months by 360 days))</li>
- *  *     <li>Loan start date (defaults to now)</li>
- *  * </ul>
+ * This is the initialization detail and terms of Loan. This class is used to provide initial values
+ * to the {@link LoanFOC} and establish some default values.
+ * <p/>
+ * Term values:
+ * <ul>
+ *     <li>Loan initial amount</li>
+ *     <li>Loan yearly interest rate</li>
+ *     <li>Loan term in months</li>
+ *     <li>Required payment frequency (defaults to monthly)</li>
+ *     <li>Interest frequency (defaults to monthly (12 months by 360 days))</li>
+ *     <li>Loan start date (defaults to now)</li>
+ * </ul>
  */
 @Data
 @Builder(toBuilder = true)

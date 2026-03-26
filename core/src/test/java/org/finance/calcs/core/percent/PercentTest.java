@@ -76,6 +76,24 @@ public class PercentTest {
     }
 
     @Test
+    public void percent_Compare_Decimal_Equals() {
+        final Percent percent = Percent.fromPercent(6.125);
+        Assertions.assertEquals(0, percent.compareTo(0.06));
+    }
+
+    @Test
+    public void percent_Compare_Decimal_Lesser() {
+        final Percent percent = Percent.fromPercent(6.125);
+        Assertions.assertEquals(-1, percent.compareTo(0.07));
+    }
+
+    @Test
+    public void percent_Compare_Decimal_Greater() {
+        final Percent percent = Percent.fromPercent(6.125);
+        Assertions.assertEquals(1, percent.compareTo(0.05));
+    }
+
+    @Test
     public void percent_Add() {
         final Percent p1 = Percent.fromPercent(5.0);
         final Percent p2 = Percent.fromPercent(5.0);

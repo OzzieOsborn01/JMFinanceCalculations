@@ -10,8 +10,24 @@ import java.time.temporal.ChronoUnit;
 
 import static org.finance.calcs.core.constants.DateRelatedConstants.*;
 
-
+/**
+ * Utility class that helps with the calculation of interest including:
+ * <ul>
+ *     <li>Calculating interest addition amount for a given date period</li>
+ *     <li>Determining daily interest rate by {@link EInterestFrequency}</li>
+ * </ul>
+ * @see EInterestFrequency
+ */
 public final class InterestFrequencyUtil {
+    /**
+     * Calculate the amount of interest to add for a given period of time
+     * @param interestFrequency how often the interest is calculated
+     * @param annualInterestRate decimal value of the annual interest rate (example 0.25 not 25.0%)
+     * @param principle the principle that the interest amount should be based on
+     * @param lastPeriodEnd the last period that was fully completed. Serves as the starting point
+     * @param currentPeriodEnd the current period expected end date. Serves as the ending point
+     * @return Interest that should be added as a double value. Value is already rounded to hundredths place.
+     */
     public static Double calculateInterestAdditionForPeriod(
             final EInterestFrequency interestFrequency,
             final double annualInterestRate,
@@ -25,6 +41,15 @@ public final class InterestFrequencyUtil {
         return interestRates.simplifyAndCalculateInterestAmountRounded(principle);
     }
 
+    /**
+     * Determines the daily interest rate
+     * @param interestFrequency {@link EInterestFrequency} that interest should be calculated for
+     * @param annualInterestRate decimal value of the annual interest rate (example 0.25 not 25.0%)
+     * @param lastPeriodEnd last time that interest was calculated
+     * @param currentPeriodEnd last point that interest should be calculated for
+     * @return {@link InterestRatePairList}
+     * @throws NotImplementedException if the interest frequency is not implemented yet
+     */
     public static InterestRatePairList determineDailyInterestRatesByInterestFrequency(
         final EInterestFrequency interestFrequency,
         final double annualInterestRate,
@@ -59,6 +84,13 @@ public final class InterestFrequencyUtil {
         }
     }
 
+    /**
+     * Determine the daily interest rate assuming 365 (or 366 for leap years) days in a year
+     * @param annualInterestRate decimal value of the annual interest rate (example 0.25 not 25.0%)
+     * @param lastPeriodEnd last time that interest was calculated
+     * @param currentPeriodEnd last point that interest should be calculated for
+     * @return {@link InterestRatePairList}
+     */
     public static InterestRatePairList determineDailyInterestRate(
             final Double annualInterestRate,
             final LocalDate lastPeriodEnd,
@@ -97,6 +129,13 @@ public final class InterestFrequencyUtil {
         }
     }
 
+    /**
+     * Determine the daily interest rate assuming 364 days in a year (7 days per week)
+     * @param annualInterestRate decimal value of the annual interest rate (example 0.25 not 25.0%)
+     * @param lastPeriodEnd last time that interest was calculated
+     * @param currentPeriodEnd last point that interest should be calculated for
+     * @return {@link InterestRatePairList}
+     */
     public static InterestRatePairList determineDailyByWeeklyInterestRate(
             final Double annualInterestRate,
             final LocalDate lastPeriodEnd,
@@ -112,8 +151,13 @@ public final class InterestFrequencyUtil {
         return new InterestRatePairList((int)durationBetween, interestRate);
     }
 
-
-    public static InterestRatePairList determineDailyByMonthlyInterestRate(
+    /**
+     * Determine the daily interest rate assuming 360 days in a year (30 days per month)
+     * @param annualInterestRate decimal value of the annual interest rate (example 0.25 not 25.0%)
+     * @param lastPeriodEnd last time that interest was calculated
+     * @param currentPeriodEnd last point that interest should be calculated for
+     * @return {@link InterestRatePairList}
+     */public static InterestRatePairList determineDailyByMonthlyInterestRate(
             final Double annualInterestRate,
             final LocalDate lastPeriodEnd,
             final LocalDate currentPeriodEnd

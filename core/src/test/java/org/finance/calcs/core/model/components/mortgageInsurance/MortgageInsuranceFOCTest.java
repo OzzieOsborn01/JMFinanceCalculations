@@ -5,7 +5,6 @@ import org.finance.calcs.core.enums.EPaymentFrequency;
 import org.finance.calcs.core.enums.ETerminationConditionComparison;
 import org.finance.calcs.core.enums.ETerminationConditionFactor;
 import org.finance.calcs.core.factories.MortgageInsuranceFOCFactory;
-import org.finance.calcs.core.model.components.mortageInsurance.TMortgageInsuranceFOC;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceTerms;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceFOC;
 import org.finance.calcs.core.model.metadata.ObligationTerminationStrategy;
@@ -21,7 +20,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
-public class PrivateMortgageInsuranceFOCTest {
+public class MortgageInsuranceFOCTest {
     @Test
     public void createPMI() {
         final MortgageInsuranceFOC expectedPmiFOC = MortgageInsuranceFOC.builder()
@@ -75,6 +74,10 @@ public class PrivateMortgageInsuranceFOCTest {
                 .createMortgageInsuranceFOC(terms);
 
         Assertions.assertEquals(expectedPmiFOC, miFoc);
+        Assertions.assertEquals(1200.0, miFoc.getAnnualInsurancePrice());
+        Assertions.assertEquals(100.0,  miFoc.getScheduledPayment());
+        Assertions.assertEquals(Percent.fromPercent(88.571, 5),  miFoc.getLoanToValueRatio());
+        Assertions.assertEquals(LocalDate.of(2025, 10, 1),  miFoc.getNextPeriodStartDate());
     }
 
     @Test
@@ -129,6 +132,61 @@ public class PrivateMortgageInsuranceFOCTest {
         final MortgageInsuranceFOC miFoc = MortgageInsuranceFOCFactory
                 .createMortgageInsuranceFOC(terms);
         miFoc.applyPayment(50.0);
+        Assertions.assertEquals(expectedPmiFOC, miFoc);
+    }
+
+    @Test
+    public void pmi_ApplyFee() {
+        final MortgageInsuranceFOC expectedPmiFOC = MortgageInsuranceFOC.builder()
+                .mortgageInsuranceType(EMortgageInsuranceType.PRIVATE_MORTGAGE_INSURANCE)
+                .houseValue(875000.0)
+                .loanValue(775000.0)
+                .loanToHouseValueRatio(Percent.fromDecimal(0.8857142, 5))
+                .terminationConditionFactor(ETerminationConditionFactor.OBLIGATION_COMPLETED)
+                .softBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
+                        .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(Percent.fromPercent(20.0, 4).decreaseReversePercentage())
+                        .terminationConditionDescription("Soft Balance Condition")
+                        .build())
+                .hardBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
+                        .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(Percent.fromPercent(22.0, 4).decreaseReversePercentage())
+                        .terminationConditionDescription("Hard Balance Condition")
+                        .build())
+                .durationTermUnits(ChronoUnit.YEARS)
+                .upfrontPremium(0.0)
+                .isInsuranceComplete(false)
+                .periodBalance(150.0)
+                .startDate(LocalDate.of(2025, 9, 1))
+                .lastProcessedDate(LocalDate.of(2025, 9, 1))
+                .flatRateDurationInsuranceRate(100.0)
+                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .paymentCalculation(new PaymentCalculation(100.0))
+                .build();
+
+        final MortgageInsuranceTerms terms = MortgageInsuranceTerms.builder()
+                .mortgageInsuranceType(EMortgageInsuranceType.PRIVATE_MORTGAGE_INSURANCE)
+                .houseValue(875000.0)
+                .loanValue(775000.0)
+                .paymentCalculation(new PaymentCalculation(100.0))
+                .terminationConditionFactor(ETerminationConditionFactor.OBLIGATION_COMPLETED)
+                .softBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
+                        .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(Percent.fromPercent(20.0, 4).decreaseReversePercentage())
+                        .terminationConditionDescription("Soft Balance Condition")
+                        .build())
+                .hardBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
+                        .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(Percent.fromPercent(22.0, 4).decreaseReversePercentage())
+                        .terminationConditionDescription("Hard Balance Condition")
+                        .build())
+                .startDate(LocalDate.of(2025, 9, 1))
+                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .build();
+
+        final MortgageInsuranceFOC miFoc = MortgageInsuranceFOCFactory
+                .createMortgageInsuranceFOC(terms);
+        miFoc.applyFee(50.0);
         Assertions.assertEquals(expectedPmiFOC, miFoc);
     }
 
@@ -352,5 +410,99 @@ public class PrivateMortgageInsuranceFOCTest {
         Assertions.assertEquals(softTermination, miFoc.isSoftTerminationComplete(), "Soft termination does not match");
         Assertions.assertEquals(hardTermination, miFoc.isHardTerminationComplete(), "Hard termination does not match");
         Assertions.assertEquals(insuranceComplete, miFoc.isInsuranceComplete(), "Insurance Complete does not match");
+    }
+
+    private static Stream<Arguments> determinationNotEndingScoreArguments() {
+        return Stream.of(
+                Arguments.argumentSet("Not Terminated", false, false, false, LocalDate.of(2025, 12, 1), 800000.0, 775000.0),
+                Arguments.argumentSet("Soft Duration not used", false, false, false, LocalDate.of(2030, 12, 1), 800000.0, 630000.0),
+                Arguments.argumentSet("Soft Duration used", false, true, false, LocalDate.of(2030, 12, 1), 800000.0, 630000.0),
+                Arguments.argumentSet("Soft Balance not used", false, false, false, LocalDate.of(2025, 12, 1), 800000.0, 630000.0),
+                Arguments.argumentSet("Soft Balance used", false, true, false, LocalDate.of(2025, 12, 1), 800000.0, 630000.0),
+                Arguments.argumentSet("Hard Balance Terminated", false, true, false, LocalDate.of(2025, 12, 1),  800000.0, 500000.0),
+                Arguments.argumentSet("Hard Duration Terminated", false, true, false, LocalDate.of(2040, 12, 1), 800000.0, 775000.0)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("determinationNotEndingScoreArguments")
+    public void pmi_determineNotEndingTerminationScore(
+            boolean softTermination,
+            boolean useSoftTermination,
+            boolean hardTermination,
+            LocalDate date,
+            Double houseValue,
+            Double loanValue
+    ) {
+        boolean insuranceComplete = hardTermination || (useSoftTermination && softTermination);
+        final MortgageInsuranceTerms terms = MortgageInsuranceTerms.builder()
+                .mortgageInsuranceType(EMortgageInsuranceType.PRIVATE_MORTGAGE_INSURANCE)
+                .houseValue(houseValue)
+                .loanValue(loanValue)
+                .paymentCalculation(new PaymentCalculation(100.0))
+                .terminationConditionFactor(ETerminationConditionFactor.NOT_ENDING)
+                .softDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                        .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(5L)
+                        .terminationConditionDescription("Soft Duration Condition")
+                        .build())
+                .hardDurationTermCondition(ObligationTerminationStrategy.<Long>builder()
+                        .comparisonMethod(ETerminationConditionComparison.GREATER_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(11L)
+                        .terminationConditionDescription("Hard Duration Condition")
+                        .build())
+                .softBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
+                        .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(Percent.fromPercent(20.0, 4).decreaseReversePercentage())
+                        .terminationConditionDescription("Soft Balance Condition")
+                        .build())
+                .hardBalanceTermCondition(ObligationTerminationStrategy.<Percent>builder()
+                        .comparisonMethod(ETerminationConditionComparison.LESS_THAN_OR_EQUAL_TO)
+                        .terminationConditionValue(Percent.fromPercent(22.0, 4).decreaseReversePercentage())
+                        .terminationConditionDescription("Hard Balance Condition")
+                        .build())
+                .startDate(LocalDate.of(2025, 9, 1))
+                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .build();
+
+        final MortgageInsuranceFOC miFoc = MortgageInsuranceFOCFactory
+                .createMortgageInsuranceFOC(terms);
+
+        miFoc.updateLastProcessedDate(date);
+        miFoc.determineTerminationScore(useSoftTermination);
+
+        Assertions.assertEquals(softTermination, miFoc.isSoftTerminationComplete(), "Soft termination does not match");
+        Assertions.assertEquals(hardTermination, miFoc.isHardTerminationComplete(), "Hard termination does not match");
+        Assertions.assertEquals(insuranceComplete, miFoc.isInsuranceComplete(), "Insurance Complete does not match");
+    }
+
+    @Test
+    public void updateLoanAndHouseValue() {
+        final MortgageInsuranceTerms terms = MortgageInsuranceTerms.builder()
+                .mortgageInsuranceType(EMortgageInsuranceType.PRIVATE_MORTGAGE_INSURANCE)
+                .houseValue(800000.0)
+                .loanValue(700000.0)
+                .paymentCalculation(new PaymentCalculation(100.0))
+                .terminationConditionFactor(ETerminationConditionFactor.NOT_ENDING)
+                .startDate(LocalDate.of(2025, 9, 1))
+                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .build();
+
+        final MortgageInsuranceFOC miFoc = MortgageInsuranceFOCFactory
+                .createMortgageInsuranceFOC(terms);
+
+        Assertions.assertEquals(800000.0, miFoc.getHouseValue(), "Initial house value does not match");
+        Assertions.assertEquals(700000.0, miFoc.getLoanValue(), "Initial loan value does not match");
+        Assertions.assertEquals(Percent.fromDecimal(0.875, 5), miFoc.getLoanToHouseValueRatio(), "Initial house to loan value does not match");
+
+        miFoc.updateHouseValue(1000000.0);
+        Assertions.assertEquals(1000000.0, miFoc.getHouseValue(), "Post-house change house value does not match");
+        Assertions.assertEquals(700000.0, miFoc.getLoanValue(), "Post-house change loan value does not match");
+        Assertions.assertEquals(Percent.fromDecimal(0.70), miFoc.getLoanToHouseValueRatio(), "Post-house change house to loan value does not match");
+
+        miFoc.updateLoanValue(600000.0);
+        Assertions.assertEquals(1000000.0, miFoc.getHouseValue(), "Post-loan change house value does not match");
+        Assertions.assertEquals(600000.0, miFoc.getLoanValue(), "Post-loan change loan value does not match");
+        Assertions.assertEquals(Percent.fromDecimal(0.60), miFoc.getLoanToHouseValueRatio(), "Post-loan change house to loan value does not match");
     }
 }
