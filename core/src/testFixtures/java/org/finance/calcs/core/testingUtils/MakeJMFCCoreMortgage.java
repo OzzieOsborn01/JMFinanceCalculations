@@ -6,11 +6,14 @@ import org.finance.calcs.core.enums.EPaymentFrequency;
 import org.finance.calcs.core.model.components.insurance.InsuranceTerms;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceTerms;
+import org.finance.calcs.core.model.components.subscription.SubscriptionFOC;
+import org.finance.calcs.core.model.components.subscription.SubscriptionTerms;
 import org.finance.calcs.core.model.metadata.PersonalDetails;
 import org.finance.calcs.core.model.obligations.MortgageFO;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 public class MakeJMFCCoreMortgage {
@@ -22,11 +25,14 @@ public class MakeJMFCCoreMortgage {
             LoanTerms loanTerms,
             InsuranceTerms insuranceTerms,
             MortgageInsuranceTerms mortgageInsuranceTerms,
+            Optional<SubscriptionTerms> hoaTerms,
             @NonNull LocalDate startDate,
             double houseValue
     ) {
         final BiFunction<Object, Object, Object> valueOrDefault = (input, defaultValue) ->
                 !Objects.isNull(input) ? input : defaultValue;
+        final BiFunction<Optional<?>, Object, Optional<?>> optionalOfValueOrDefault = (input, defaultValue) ->
+                !Objects.isNull(input) ? input : Optional.ofNullable(defaultValue);
 
         final LoanTerms finalLoanTerms = (LoanTerms) valueOrDefault.apply(loanTerms, MakeJMFCCoreFOC.aLoanTerms());
         finalLoanTerms.setLoanTermStartDate(startDate);
@@ -37,12 +43,16 @@ public class MakeJMFCCoreMortgage {
         final MortgageInsuranceTerms finalMortgageInsuranceTerms = (MortgageInsuranceTerms) valueOrDefault.apply(mortgageInsuranceTerms, MakeJMFCCoreFOC.aPrivateMortgageInsuranceTerms());
         finalMortgageInsuranceTerms.setStartDate(startDate);
 
+        final Optional<SubscriptionTerms> finalHoaTerms = (Optional<SubscriptionTerms>) optionalOfValueOrDefault.apply(hoaTerms, MakeJMFCCoreFOC.aHoaSubscriptionTerms());
+        finalHoaTerms.ifPresent(terms -> terms.setStartDate(startDate));
+
         return new MortgageFO(
                 (EPaymentFrequency) valueOrDefault.apply(frequency, EPaymentFrequency.MONTHLY),
                 (PersonalDetails) valueOrDefault.apply(personalDetails, MakeJMFCCoreFOC.aPersonalDetails()),
                 finalLoanTerms,
                 finalInsuranceTerms,
                 finalMortgageInsuranceTerms,
+                finalHoaTerms.orElse(null),
                 startDate,
                 houseValue);
     }

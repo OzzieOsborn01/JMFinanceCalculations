@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
 import org.finance.calcs.core.testingUtils.MakeJMFCCoreFOC;
-import org.finance.calcs.processing.model.context.LoanFOCProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.LoanFOCProcessorContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -95,9 +95,7 @@ public class LoanFOCProcessorTest {
                 .interestRemaining(expectedResults.get(workingIter).get(3))
                 .build();
 
-
             loanFOCProcessor.processPayment(context, loan, workingDate);
-
 
             Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
             iteration++;

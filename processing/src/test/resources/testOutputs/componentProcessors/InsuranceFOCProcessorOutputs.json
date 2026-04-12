@@ -1,6 +1,6 @@
 {
   "exampleOutput": {
-    "loanAmount_interestDecimal_ScheduledPayment": [
+    "termBalance_termDuration": [
       ["periodBalance", "periodReset"]
     ]
   },

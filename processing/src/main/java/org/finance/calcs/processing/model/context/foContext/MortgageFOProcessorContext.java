@@ -1,10 +1,12 @@
-package org.finance.calcs.processing.model.context;
+package org.finance.calcs.processing.model.context.foContext;
 
 import lombok.*;
 
-import org.finance.calcs.core.model.obligations.MortgageFO;
 import org.finance.calcs.core.util.RoundingUtil;
-import org.finance.calcs.processing.common.model.FOProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.InsuranceFOCProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.LoanFOCProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.MortgageInsuranceFOCProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.SubscriptionFOCProcessorContext;
 import org.finance.calcs.processing.model.obligationPeriod.MortgageFOPeriod;
 
 import java.time.LocalDate;
@@ -35,6 +37,9 @@ public class MortgageFOProcessorContext {
 
     @Builder.Default
     Double totalMortgageInsuranceContribution = 0.0;
+
+    @Builder.Default
+    Double totalHoaContribution = 0.0;
 
     @Setter(AccessLevel.NONE)
     @ToString.Exclude
@@ -75,11 +80,17 @@ public class MortgageFOProcessorContext {
                 .build();
     }
 
-    public MortgageInsuranceFOCProcessorContext getMortgageInsuranceFOProcessorContext(final double insuranceContributionPayment, final double houseValue, final double loanValue) {
+    public MortgageInsuranceFOCProcessorContext getMortgageInsuranceFOCProcessorContext(final double insuranceContributionPayment, final double houseValue, final double loanValue) {
         return MortgageInsuranceFOCProcessorContext.builder()
                 .payment(insuranceContributionPayment)
                 .houseValue(houseValue)
                 .loanValue(loanValue)
+                .build();
+    }
+
+    public SubscriptionFOCProcessorContext getHoaFeeFOCProcessorContext(final double hoaFeeContributionPayment) {
+        return SubscriptionFOCProcessorContext.builder()
+                .payment(hoaFeeContributionPayment)
                 .build();
     }
 
@@ -90,6 +101,7 @@ public class MortgageFOProcessorContext {
         totalLoanContribution = RoundingUtil.roundValue(totalLoanContribution + mortgageFOPeriod.getLoanContribution());
         totalInsuranceContribution = RoundingUtil.roundValue(totalInsuranceContribution + mortgageFOPeriod.getInsuranceContribution());
         totalMortgageInsuranceContribution = RoundingUtil.roundValue(totalMortgageInsuranceContribution + mortgageFOPeriod.getMortgageInsuranceContribution());
+        totalHoaContribution = RoundingUtil.roundValue(totalHoaContribution + mortgageFOPeriod.getHoaContribution());
         lastProcessedDate = mortgageFOPeriod.getEndDate();
     }
 }

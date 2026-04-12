@@ -121,9 +121,9 @@ public class InsuranceFOC implements FinancialObligationComponent {
     }
 
     /**
-     * Get the start date of the next period
-     * @return {@link LocalDate}
+     * {@inheritDoc}
      */
+    @Override
     public LocalDate getNextPeriodStartDate() {
         return insurancePeriodDuration.getNextDate(periodStartDate);
     }

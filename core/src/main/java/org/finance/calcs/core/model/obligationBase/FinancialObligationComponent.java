@@ -1,5 +1,7 @@
 package org.finance.calcs.core.model.obligationBase;
 
+import java.time.LocalDate;
+
 /**
  * FinancialObligationComponent (FOC) represents a generic financial obligation component. These components can represent
  * the totality or a portion of a given {@link FinancialObligation}. Classes that are components are labeled as
@@ -43,4 +45,10 @@ public interface FinancialObligationComponent {
      * @return the new balance
      */
     double applyIncreasingBalance(double amount);
+
+    /**
+     * Get the start date of the next period
+     * @return {@link LocalDate}
+     */
+    abstract public LocalDate getNextPeriodStartDate();
 }

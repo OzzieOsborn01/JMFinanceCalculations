@@ -10,38 +10,16 @@ plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
     id("java")
+
+    `jm-fin-calc-java-conventions`
 }
 
 allprojects {
     apply(plugin = "java")
 
     dependencies {
-        // This dependency is exported to consumers, that is to say found on their compile classpath.
-        implementation(libs.commons.math3)
-
-        // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-        implementation(libs.guava)
-
-        testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-
-        compileOnly(libs.lombok)
-        annotationProcessor(libs.lombok)
-        testCompileOnly(libs.lombok)
-        testAnnotationProcessor(libs.lombok)
-
-        implementation(libs.mapstruct)
-        annotationProcessor(libs.mapstruct.processor)
-
-        implementation(libs.commons.lang3)
-
-        implementation(libs.jackson.databind)
-        annotationProcessor(libs.jackson.annotations)
-        implementation(libs.jackson.datatype.jsr310)
-        implementation(libs.jackson.datatype.jdk8)
     }
 }
-
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()

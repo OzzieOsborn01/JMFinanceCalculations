@@ -115,6 +115,14 @@ public class LoanFOC implements FinancialObligationComponent {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LocalDate getNextPeriodStartDate() {
+        return scheduledPaymentFrequency.getNextDate(lastProcessedDate);
+    }
+
+    /**
      * Adjust the scheduled payment based on the current loan principle, loan term remaining, provided interest rate,
      * and the provided scheduled payment frequency
      * @param scheduledPaymentFrequency

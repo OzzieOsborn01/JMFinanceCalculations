@@ -11,10 +11,15 @@ import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceFOC;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceTerms;
+import org.finance.calcs.core.model.components.subscription.SubscriptionFOC;
+import org.finance.calcs.core.model.components.subscription.SubscriptionTerms;
 import org.finance.calcs.core.model.metadata.PersonalDetails;
 import org.finance.calcs.core.model.obligationBase.FinancialObligation;
+import org.finance.calcs.core.util.RoundingUtil;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -33,6 +38,8 @@ public class MortgageFO implements FinancialObligation {
 
     private final MortgageInsuranceFOC mortgageInsuranceComponent;
 
+    private final Optional<SubscriptionFOC> hoaFeesComponent;
+
     private final LocalDate startDate;
 
     LocalDate lastProcessedDate;
@@ -47,6 +54,7 @@ public class MortgageFO implements FinancialObligation {
             @NonNull LoanTerms loanTerms,
             @NonNull InsuranceTerms homeInsuranceTerms,
             @NonNull MortgageInsuranceTerms mortgageInsuranceTerms,
+            SubscriptionTerms hoaFeesTerms,
             @NonNull LocalDate startDate,
             double houseValue
     ) {
@@ -59,7 +67,9 @@ public class MortgageFO implements FinancialObligation {
         this.startDate = startDate;
         this.lastProcessedDate = startDate;
         this.isMortgageComplete = false;
+        this.hoaFeesComponent = Optional.ofNullable(hoaFeesTerms).map(SubscriptionFOC::new);
         this.houseValue = houseValue;
+
     }
 
     public LocalDate getNextPeriodEndDate() {
@@ -68,5 +78,17 @@ public class MortgageFO implements FinancialObligation {
 
     public double getLoanBalance() {
         return loanComponent.getLoanCurrentPrinciple();
+    }
+
+    public double getHomeInsuranceRegularPayment() {
+        return homeInsuranceComponent.getScheduledPaymentAmount();
+    }
+
+    public double getMortgageInsuranceRegularPayment() {
+        return mortgageInsuranceComponent.getScheduledPayment();
+    }
+
+    public double getHoaFeesRegularPayment() {
+        return hoaFeesComponent.map(SubscriptionFOC::getScheduledPayment).orElse(0.0);
     }
 }

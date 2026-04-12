@@ -1,14 +1,15 @@
-package org.finance.calcs.processing.model.context;
+package org.finance.calcs.processing.model.context.focContext;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
 import org.finance.calcs.processing.common.model.FOCProcessorContext;
 import org.jspecify.annotations.Nullable;
 
 @Data
 @Builder
-public class MortgageInsuranceFOCProcessorContext implements FOCProcessorContext {
+public class SubscriptionFOCProcessorContext implements FOCProcessorContext {
     @NonNull
     private Double payment;
 
@@ -24,15 +25,8 @@ public class MortgageInsuranceFOCProcessorContext implements FOCProcessorContext
     @Builder.Default
     private Double periodBalance = 0.0;
 
-    @NonNull
-    private Double houseValue;
-
-    @NonNull
-    private Double loanValue;
-
+    @Nullable
     @Builder.Default
-    private Boolean skipped = false;
-
-    @Builder.Default
-    private Boolean useSoftTerminationStrategy = false;
+    @Getter()
+    private boolean periodReset = false;
 }

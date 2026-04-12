@@ -18,6 +18,7 @@ public class MortgageFOPeriod {
     double interestContribution;
     double insuranceContribution;
     double mortgageInsuranceContribution;
+    double hoaContribution;
     double payment;
     LocalDate startDate;
     LocalDate endDate;

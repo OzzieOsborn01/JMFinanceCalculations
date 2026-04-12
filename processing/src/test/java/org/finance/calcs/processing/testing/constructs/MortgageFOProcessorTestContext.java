@@ -32,6 +32,9 @@ public class MortgageFOProcessorTestContext {
     Double totalMortgageInsuranceContribution = 0.0;
 
     @Builder.Default
+    Double totalHoaContribution = 0.0;
+
+    @Builder.Default
     Double totalPayments = 0.0;
 
     @Setter(AccessLevel.NONE)

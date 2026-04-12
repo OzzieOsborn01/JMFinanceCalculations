@@ -1,4 +1,4 @@
-package org.finance.calcs.processing.model.context;
+package org.finance.calcs.processing.model.context.focContext;
 
 import lombok.Builder;
 import lombok.Data;

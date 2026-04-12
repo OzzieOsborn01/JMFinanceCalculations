@@ -1,6 +1,6 @@
 {
   "exampleOutput": {
-    "loanAmount_interestDecimal_ScheduledPayment": [
+    "type_periodBalance_UseCase": [
       ["periodBalance", "paymentUsed"]
     ]
   },

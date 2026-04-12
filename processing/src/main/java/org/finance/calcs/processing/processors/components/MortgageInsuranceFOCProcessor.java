@@ -3,7 +3,7 @@ package org.finance.calcs.processing.processors.components;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceFOC;
 import org.finance.calcs.core.util.RoundingUtil;
 import org.finance.calcs.processing.common.processor.FOCProcessor;
-import org.finance.calcs.processing.model.context.MortgageInsuranceFOCProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.MortgageInsuranceFOCProcessorContext;
 
 import java.time.LocalDate;
 

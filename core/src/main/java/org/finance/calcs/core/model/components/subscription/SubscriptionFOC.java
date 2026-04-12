@@ -46,6 +46,10 @@ public class SubscriptionFOC implements FinancialObligationComponent {
         periodEndDate = scheduledPaymentFrequency.getNextDate(startDate).minusDays(1);
     }
 
+    public Double getScheduledPayment() {
+        return paymentCalculation.getPaymentFlatRate();
+    }
+
     @Override
     public double applyDecreasingBalance(double decreaseAmount) {
         periodBalance = RoundingUtil.roundValue(periodBalance - decreaseAmount);
@@ -63,5 +67,13 @@ public class SubscriptionFOC implements FinancialObligationComponent {
         this.periodBalance = paymentCalculation.getPaymentFlatRate();
         this.lastProcessedDate = lastProcessedDate;
         this.periodEndDate = scheduledPaymentFrequency.getNextDate(lastProcessedDate);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LocalDate getNextPeriodStartDate() {
+        return scheduledPaymentFrequency.getNextDate(lastProcessedDate);
     }
 }

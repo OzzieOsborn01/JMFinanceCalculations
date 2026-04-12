@@ -10,7 +10,7 @@ import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranc
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceTerms;
 import org.finance.calcs.core.model.metadata.ObligationTerminationStrategy;
 import org.finance.calcs.core.testingUtils.MakeJMFCCoreFOC;
-import org.finance.calcs.processing.model.context.MortgageInsuranceFOCProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.MortgageInsuranceFOCProcessorContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

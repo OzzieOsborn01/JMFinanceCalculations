@@ -10,6 +10,8 @@ import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.model.components.loan.LoanTerms;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceFOC;
 import org.finance.calcs.core.model.components.mortageInsurance.MortgageInsuranceTerms;
+import org.finance.calcs.core.model.components.subscription.SubscriptionFOC;
+import org.finance.calcs.core.model.components.subscription.SubscriptionTerms;
 import org.finance.calcs.core.model.metadata.Debt;
 import org.finance.calcs.core.model.metadata.ObligationTerminationStrategy;
 import org.finance.calcs.core.model.metadata.PersonalDetails;
@@ -24,31 +26,13 @@ public final class MakeJMFCCoreFOC {
     final static Random random = new Random();
 
     public static LoanFOC aLoanFOC(final double loanAmount, final Percent interest, final int loanMonths) {
-        return new LoanFOC(
-            LoanTerms.builder()
-                .loanInitialAmount(loanAmount)
-                .loanYearlyInterestRate(interest)
-                .loanTermMonths(loanMonths)
-                .build()
-        );
+        return new LoanFOC(aLoanTerms(loanAmount, interest, loanMonths));
     }
     public static LoanFOC aRandomLoanFOC() {
-        return new LoanFOC(
-                LoanTerms.builder()
-                        .loanInitialAmount((double)random.nextInt(50000, 975001))
-                        .loanYearlyInterestRate(Percent.fromDecimal(random.nextDouble(0.01, 0.15)))
-                        .loanTermMonths(random.nextInt(12, 360))
-                        .build()
-        );
+        return new LoanFOC(aRandomLoanTerms());
     }
     public static LoanFOC aLoanFOC() {
-        return new LoanFOC(
-                LoanTerms.builder()
-                        .loanInitialAmount(775000.0)
-                        .loanYearlyInterestRate(Percent.fromPercent(6.125, 5))
-                        .loanTermMonths(360)
-                        .build()
-        );
+        return new LoanFOC(aLoanTerms());
     }
     public static LoanTerms aLoanTerms(final double loanAmount, final Percent interest, final int loanMonths) {
         return LoanTerms.builder()
@@ -99,7 +83,12 @@ public final class MakeJMFCCoreFOC {
             final EPaymentFrequency periodFrequency,
             final Double paymentRate
     ) {
-        return InsuranceFOCFactory.buildInsuranceFOC(aFlatPaymentInsuranceTerms(insuranceType, insuranceProvider, paymentFrequency, periodFrequency, paymentRate));
+        return InsuranceFOCFactory.buildInsuranceFOC(aFlatPaymentInsuranceTerms(
+                insuranceType,
+                insuranceProvider,
+                paymentFrequency,
+                periodFrequency,
+                paymentRate));
     }
 
     public static InsuranceFOC aRandomFlatPaymentInsuranceFOC() {
@@ -229,6 +218,34 @@ public final class MakeJMFCCoreFOC {
                         .terminationConditionValue(15L)
                         .terminationConditionDescription("Hard Duration Condition")
                         .build())
+                .build();
+    }
+
+    public static SubscriptionFOC aHoaSubscription(final PaymentCalculation calculation) {
+        return new SubscriptionFOC(aHoaSubscriptionTerms(calculation));
+    }
+
+    public static SubscriptionFOC aHoaSubscription() {
+        return new SubscriptionFOC(aHoaSubscriptionTerms());
+    }
+
+    public static SubscriptionTerms aHoaSubscriptionTerms(final PaymentCalculation calculation) {
+        return SubscriptionTerms.builder()
+                .id("HOA Subscription")
+                .vendor("HOA")
+                .description("HOA Payment")
+                .durationType(ESubscriptionDurationType.EXTERNAL_CONDITIONAL)
+                .paymentCalculation(calculation)
+                .build();
+    }
+
+    public static SubscriptionTerms aHoaSubscriptionTerms() {
+        return SubscriptionTerms.builder()
+                .id("HOA Subscription")
+                .vendor("HOA")
+                .description("HOA Payment")
+                .durationType(ESubscriptionDurationType.EXTERNAL_CONDITIONAL)
+                .paymentCalculation(PaymentCalculation.flatRateBuilder().paymentFlatRate(99.0).build())
                 .build();
     }
 }

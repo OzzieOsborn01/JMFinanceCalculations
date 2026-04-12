@@ -46,7 +46,7 @@ public class MortgageInsuranceFOCTest {
                 .startDate(LocalDate.of(2025, 9, 1))
                 .lastProcessedDate(LocalDate.of(2025, 9, 1))
                 .flatRateDurationInsuranceRate(100.0)
-                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .scheduledPaymentFrequency(EPaymentFrequency.MONTHLY)
                 .paymentCalculation(new PaymentCalculation(100.0))
                 .build();
 
@@ -105,7 +105,7 @@ public class MortgageInsuranceFOCTest {
                 .startDate(LocalDate.of(2025, 9, 1))
                 .lastProcessedDate(LocalDate.of(2025, 9, 1))
                 .flatRateDurationInsuranceRate(100.0)
-                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .scheduledPaymentFrequency(EPaymentFrequency.MONTHLY)
                 .paymentCalculation(new PaymentCalculation(100.0))
                 .build();
 
@@ -160,7 +160,7 @@ public class MortgageInsuranceFOCTest {
                 .startDate(LocalDate.of(2025, 9, 1))
                 .lastProcessedDate(LocalDate.of(2025, 9, 1))
                 .flatRateDurationInsuranceRate(100.0)
-                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .scheduledPaymentFrequency(EPaymentFrequency.MONTHLY)
                 .paymentCalculation(new PaymentCalculation(100.0))
                 .build();
 
@@ -215,7 +215,7 @@ public class MortgageInsuranceFOCTest {
                 .startDate(LocalDate.of(2025, 9, 1))
                 .lastProcessedDate(LocalDate.of(2025, 10, 1))
                 .flatRateDurationInsuranceRate(100.0)
-                .paymentFrequency(EPaymentFrequency.MONTHLY)
+                .scheduledPaymentFrequency(EPaymentFrequency.MONTHLY)
                 .paymentCalculation(new PaymentCalculation(100.0))
                 .build();
 
@@ -262,12 +262,12 @@ public class MortgageInsuranceFOCTest {
     @MethodSource("determinationTerminationBalanceScoreArguments")
     public void pmi_determineBalanceTerminationScore(
             boolean softTermination,
-            boolean useSoftTermiantion,
+            boolean useSoftTermination,
             boolean hardTermination,
             Double houseValue,
             Double loanValue
         ) {
-        boolean insuranceComplete = hardTermination || (useSoftTermiantion && softTermination);
+        boolean insuranceComplete = hardTermination || (useSoftTermination && softTermination);
         final MortgageInsuranceTerms terms = MortgageInsuranceTerms.builder()
                 .mortgageInsuranceType(EMortgageInsuranceType.PRIVATE_MORTGAGE_INSURANCE)
                 .houseValue(875000.0)
@@ -292,7 +292,7 @@ public class MortgageInsuranceFOCTest {
                 .createMortgageInsuranceFOC(terms);
 
         miFoc.updateLoanValueAndHouseValue(loanValue, houseValue);
-        miFoc.determineTerminationScore(useSoftTermiantion);
+        miFoc.determineTerminationScore(useSoftTermination);
 
         Assertions.assertEquals(softTermination, miFoc.isSoftTerminationComplete(), "Soft termination does not match");
         Assertions.assertEquals(hardTermination, miFoc.isHardTerminationComplete(), "Hard termination does not match");

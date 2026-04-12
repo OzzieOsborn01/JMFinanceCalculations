@@ -4,7 +4,7 @@ import org.finance.calcs.core.model.components.loan.LoanFOC;
 import org.finance.calcs.core.util.InterestFrequencyUtil;
 import org.finance.calcs.core.util.RoundingUtil;
 import org.finance.calcs.processing.common.processor.FOCProcessor;
-import org.finance.calcs.processing.model.context.LoanFOCProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.LoanFOCProcessorContext;
 
 import java.time.LocalDate;
 

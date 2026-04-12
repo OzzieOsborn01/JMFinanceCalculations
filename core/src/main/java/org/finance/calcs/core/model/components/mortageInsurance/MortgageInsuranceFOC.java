@@ -59,7 +59,7 @@ public class MortgageInsuranceFOC implements FinancialObligationComponent {
     private Double upfrontPremium;
 
     @NonNull
-    private EPaymentFrequency paymentFrequency;
+    private EPaymentFrequency scheduledPaymentFrequency;
 
     @NonNull
     private Double flatRateDurationInsuranceRate;
@@ -74,7 +74,7 @@ public class MortgageInsuranceFOC implements FinancialObligationComponent {
 
     public MortgageInsuranceFOC(final MortgageInsuranceTerms terms) {
         this.mortgageInsuranceType = terms.getMortgageInsuranceType();
-        this.paymentFrequency = terms.getPaymentFrequency();
+        this.scheduledPaymentFrequency = terms.getPaymentFrequency();
         this.paymentCalculation = terms.getPaymentCalculation();
         this.isInsuranceComplete = terms.getOverridden();
         this.upfrontPremium = terms.getUpfrontPremium();
@@ -97,7 +97,7 @@ public class MortgageInsuranceFOC implements FinancialObligationComponent {
      * @return insurance price per year
      */
     public Double getAnnualInsurancePrice() {
-        return PaymentFrequencyUtil.paymentRateConverter(flatRateDurationInsuranceRate, paymentFrequency, EPaymentFrequency.YEARLY);
+        return PaymentFrequencyUtil.paymentRateConverter(flatRateDurationInsuranceRate, scheduledPaymentFrequency, EPaymentFrequency.YEARLY);
     }
 
     /**
@@ -270,10 +270,10 @@ public class MortgageInsuranceFOC implements FinancialObligationComponent {
     }
 
     /**
-     * Get the next period start date
-     * @return
+     * {@inheritDoc}
      */
+    @Override
     public LocalDate getNextPeriodStartDate() {
-        return paymentFrequency.getNextDate(lastProcessedDate);
+        return scheduledPaymentFrequency.getNextDate(lastProcessedDate);
     }
 }

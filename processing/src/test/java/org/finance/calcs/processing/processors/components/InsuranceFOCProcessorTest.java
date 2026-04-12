@@ -7,7 +7,7 @@ import org.finance.calcs.core.factories.InsuranceFOCFactory;
 import org.finance.calcs.core.model.components.insurance.InsuranceFOC;
 import org.finance.calcs.core.model.components.insurance.InsuranceTerms;
 import org.finance.calcs.core.testingUtils.MakeJMFCCoreFOC;
-import org.finance.calcs.processing.model.context.InsuranceFOCProcessorContext;
+import org.finance.calcs.processing.model.context.focContext.InsuranceFOCProcessorContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,10 +94,10 @@ public class InsuranceFOCProcessorTest {
 
             processorToTest.processPayment(context, insurance, workingDate);
 
-
             Assertions.assertEquals(expectedContext, context, "Iteration " + iteration + " values are incorrect");
             iteration++;
             workingDate = workingDate.plusMonths(1);
+            processorToTest.processEndOfPeriod(context, insurance, workingDate);
         }
 
         // TODO: Do we treat this as a balance to remove or a regular subscription that can just carry over

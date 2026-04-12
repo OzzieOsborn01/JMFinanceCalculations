@@ -1,0 +1,23 @@
+{
+  "exampleOutput": {
+    "termBalance_termDuration": [
+      ["periodBalance", "periodReset"]
+    ]
+  },
+  "results": {
+    "99.0_MONTHLY": [
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false],
+      [99.0, false]
+    ]
+  }
+}
